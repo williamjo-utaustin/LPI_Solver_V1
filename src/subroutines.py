@@ -119,7 +119,9 @@ def regolith_removal():
     # Solve for the mass flow rate per unit area using updated values and repeat process
     # Start to derive launch velocities and theoretical launch angles for particles
     # Think about how you can get mass launched to number of particles launched at time t
-    # Given mass ejected, velocity, angle, density, particle size distribution
+    # Given mass ejected, velocity, angle, density, particle size distribution, create Monte Carlo Code
+    # Needs a f_num value for each particle
+    # Solve for the flux per unit area, Mie Scattering, grain heating etc. etc.
     # ----------------------------------------------------------------------------------
 
 
