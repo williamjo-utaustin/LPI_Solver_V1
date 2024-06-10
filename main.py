@@ -11,7 +11,6 @@ import var_nozzle as nozzle
 import var_soil as soil
 import var_impinged_gas as imp
 import var_range_of_interest as bounds
-import var_excavation as excavate
 
 # import functions
 from fun_compressible import *

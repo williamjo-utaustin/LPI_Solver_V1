@@ -4,7 +4,6 @@ from scipy.integrate import quad
 from scipy.optimize import fsolve
 
 import var_range_of_interest as bounds
-import var_excavation as excavate
 
 import var_soil as soil
 import var_impinged_gas as imp
