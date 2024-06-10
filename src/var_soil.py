@@ -7,7 +7,7 @@ epsilon = 0.0029 # average value for soil efficiency
 #alpha = 0.289 # J/m^3 (constant)
 alpha_0 = 0.289
 D_84 = 450E-6 # m, Check back with apollo 16 data for more accurate answer
-
+D_bracket = 1.5 * D_84
 
 rho_0 = 1100
 rho_inf = 1800 #38% porosity deep within crater

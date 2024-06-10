@@ -9,19 +9,30 @@ def compute_soil_density_depth(z):
     return soil.rho_bulk
 
 def compute_cohesive_energy_density(z):
-    return soil.alpha_0 * np.exp((compute_soil_density_depth(z) - soil.rho_inf)/soil.k_cohesion)
+    return soil.alpha_0 * np.exp((compute_soil_density_depth(z) - soil.rho_0)/soil.k_cohesion)
 
 def compute_threshold_energy(z):
-    E_th = soil.E_th_0 * (soil.rho_0 * cs.g * soil.D_84 + soil.alpha_0)/(compute_soil_density_depth(z)*cs.g*soil.D_84 + compute_cohesive_energy_density(z))
+    E_th = soil.E_th_0 * compute_ratio(z)
     return E_th
 
 def compute_E_downward():
     imp.E_downward = imp.rho_gas * imp.v_gas**2 * imp.v_T /12
     return None
 
-def compute_mass_erosion_rate(E_th, alpha):
+def compute_ratio(z):    
+    ratio = (soil.rho_0 * cs.g * soil.D_bracket + soil.alpha_0)/(compute_soil_density_depth(z) * cs.g * soil.D_bracket + compute_cohesive_energy_density(z))
+    return ratio
+
+
+def compute_mass_erosion_rate(E_th):
+    
+    compute_E_downward()
+    
     if(imp.E_downward < E_th):
         m_dot = 0
     else:
-        m_dot = soil.rho_bulk * soil.epsilon * (imp.E_downward - E_th)/(soil.rho_bulk * cs.g * 1.5 * soil.D_84 + alpha)
+        m_dot = soil.rho_0 * soil.epsilon * (imp.E_downward - soil.E_th_0)/(soil.rho_0 * cs.g * 1.5 * soil.D_bracket + soil.alpha_0)
+    
     return m_dot
+
+

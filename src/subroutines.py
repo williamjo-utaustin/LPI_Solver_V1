@@ -37,6 +37,10 @@ def plot_initial_disturbed_altitude():
 def regolith_removal():
 
     # initialize_variables()
+    # start from t = 0 or from a restart file
+
+    # unload the restart file
+
 
     # set the timestep (seconds)
     delta_t = 1
@@ -61,11 +65,11 @@ def regolith_removal():
     # initialize densities
     surf_soil_density = np.zeros(bounds.n_points_centerline-1)
     alpha = np.zeros(bounds.n_points_centerline)
-    E_tr = np.zeros(bounds.n_points_centerline)
+    E_th = np.zeros(bounds.n_points_centerline)
 
     for i in range(0,bounds.n_points_centerline):
         alpha[i] = compute_cohesive_energy_density(0)
-        E_tr[i] = compute_threshold_energy(0)
+        E_th[i] = compute_threshold_energy(0)
 
     # initialize the midpoint value of the radial bins
     for i in range(1,bounds.n_points_centerline):
@@ -79,73 +83,127 @@ def regolith_removal():
     # initialize soil density depth
     for i in range(0, bounds.n_points_centerline-1):
         surf_soil_density[i] = compute_soil_density_depth(0)
-        print(i, surf_soil_density[i])
-
-    # loop()
+        #print(i, surf_soil_density[i])
 
     # --------------------------------------
     # begin looping over here (ie timesteps)
     # --------------------------------------
 
-    # change nozzle height (v_descent & delta_t)
-
-
-    # solve for the mass erosion rate by area (kg/m^2 s) 
-    for i in range(0, bounds.n_points_centerline):
-        r_centerline = bounds.r_centerlines_array[i]
-        compute_impinged_gas(h_nozzle, r_centerline)
-        compute_E_downward() 
-        m_dot_area_eroded[i] = compute_mass_erosion_rate(E_tr[i], alpha[i])
-    
-    # compute the ring mass erosion rate (kg/s) at each timestep at the midpoints
-    for i in range(1,bounds.n_points_centerline):
-        m_dot_eroded_mid[i-1] = ((m_dot_area_eroded[i] + m_dot_area_eroded[i-1])/2) * ring_area[i-1]
-    
-    # compute the total mass eroded in each ring for one timestep
-    m_excavated_inst = m_dot_eroded_mid * delta_t
-
-    # compute the cumulative total mass eroded in each ring
-    m_excavated_cumulative = m_excavated_cumulative + m_excavated_inst
-
-    # compute for the depth of the new regolith
-    for i in range(0,bounds.n_points_centerline-1):
+    print("Timestep,", "Depth Excavated,", "Threshold Energy,", "E_down,", "Alpha,", "Ratio,","Mdot")
+    for t in range(0,5000):
         
-        # save excavation depth for current timestep
-        h_excavated_mid_old[i] = h_excavated_mid[i]
+        # change nozzle height (v_descent & delta_t)
 
-        # solve for the surficial density (kg/m^2)
-        surf_den_excavated[i] = (m_excavated_inst[i])/ring_area[i]
-        
-        # solve for the depth z of excavation by integration and solving for the upper bound
-        # the lower bound is defined as the starting depth at each timestep 
-        def func(z):
-            y, err = quad(compute_soil_density_depth, h_excavated_mid[i], z)
-            return surf_den_excavated[i] - y
-        sol = fsolve(func, 1E-8)
+        # adjust the threshold energy as function of depth of material excavated
+        for i in range(0,bounds.n_points_centerline):
+            alpha[i] = compute_cohesive_energy_density(h_excavated_bounds[i])
+            E_th[i] = compute_threshold_energy(h_excavated_bounds[i])
 
-        # update the new excavated depth
-        h_excavated_mid[i] = sol[0]
+        # solve for the mass erosion rate by area (kg/m^2 s) 
+        for i in range(0, bounds.n_points_centerline):
+            r_centerline = bounds.r_centerlines_array[i]
+            compute_impinged_gas(h_nozzle, r_centerline)
+            m_dot_area_eroded[i] = compute_mass_erosion_rate(E_th[i]) * compute_ratio(h_excavated_bounds[i])
 
-        # compute the new bulk density for each density bin
-        surf_soil_density[i] = compute_soil_density_depth(h_excavated_mid[i]) 
-        #print(i, r_midpoint[i], h_excavated_mid[i], surf_soil_density[i])
+        # obtain the data from a single point for now
+        if(np.mod(t,100)==0):
+            print(t, h_excavated_bounds[860], E_th[860], imp.E_downward, alpha[860], compute_ratio(h_excavated_bounds[860]), m_dot_area_eroded[860])
 
-    # solve for the new heights at the bounds
-    h_excavated_bounds[0] = h_excavated_mid[0]
-    for i in range(1, bounds.n_points_centerline-1):
-        h_excavated_bounds[i] = (h_excavated_mid[i-1] + h_excavated_mid[i])/2
-    h_excavated_bounds[bounds.n_points_centerline-1] = h_excavated_mid[bounds.n_points_centerline-2]
+        # compute the ring mass erosion rate (kg/s) at each timestep at the midpoints
+        for i in range(1,bounds.n_points_centerline):
+            m_dot_eroded_mid[i-1] = ((m_dot_area_eroded[i] + m_dot_area_eroded[i-1])/2) * ring_area[i-1]
+    
+        # compute the total mass eroded in each ring for one timestep
+        m_excavated_inst = m_dot_eroded_mid * delta_t
 
+        # compute the cumulative total mass eroded in each ring
+        m_excavated_cumulative = m_excavated_cumulative + m_excavated_inst
+
+        # compute for the depth of the new regolith
+        for i in range(0,bounds.n_points_centerline-1):
+
+            # save excavation depth for current timestep
+            h_excavated_mid_old[i] = h_excavated_mid[i]
+
+            # solve for the surficial density (kg/m^2)
+            surf_den_excavated[i] = (m_excavated_inst[i])/ring_area[i]
+
+            # solve for the depth z of excavation by integration and solving for the upper bound
+            # the lower bound is defined as the starting depth at each timestep 
+            def func(z):
+                y, err = quad(compute_soil_density_depth, h_excavated_mid[i], z)
+                return surf_den_excavated[i] - y
+            sol = fsolve(func, 1E-8)
+
+            # update the new excavated depth
+            h_excavated_mid[i] = sol[0]
+
+            # compute the new bulk density for each density bin
+            surf_soil_density[i] = compute_soil_density_depth(h_excavated_mid[i]) 
+            #print(i, r_midpoint[i], h_excavated_mid[i], surf_soil_density[i])
+
+        # solve for the new heights at the bounds
+        h_excavated_bounds[0] = h_excavated_mid[0]
+        for i in range(1, bounds.n_points_centerline-1):
+            h_excavated_bounds[i] = (h_excavated_mid[i-1] + h_excavated_mid[i])/2
+        h_excavated_bounds[bounds.n_points_centerline-1] = h_excavated_mid[bounds.n_points_centerline-2]
+
+        #for i in range(860,861):
+        #    print(i, bounds.r_centerlines_array[i],compute_ratio(h_excavated_bounds[i]))
+
+        # use new heights at the bounds to solve a new alpha value and threshold value
+        #for i in range(0,bounds.n_points_centerline):
+        #    
+        #    old_alpha = alpha[i]
+        #    old_E_th = E_th[i]
+        #    
+        #    alpha[i] = compute_cohesive_energy_density(h_excavated_bounds[i])
+        #    E_th[i] = compute_threshold_energy(h_excavated_bounds[i])
+        #    
+        #    print(i, old_alpha, alpha[i], " ", old_E_th, E_th[i])
+    
+        #m_dot_area_eroded_old = m_dot_area_eroded
+        ## check if the mass flow rate has been decreased
+        #for i in range(0, bounds.n_points_centerline):
+        #    soil.rho_bulk = compute_soil_density_depth(h_excavated_bounds[i])
+        #    r_centerline = bounds.r_centerlines_array[i]
+        #    compute_impinged_gas(h_nozzle, r_centerline)
+        #    compute_E_downward() 
+        #    m_dot_area_eroded[i] = compute_mass_erosion_rate(E_th[i], alpha[i])
+        #    print(i, m_dot_area_eroded_old[i], m_dot_area_eroded[i])
+    
+
+
+    return None
+    
+    
+    
+    
+    
+    
+    
     # use new heights at the bounds to solve a new alpha value and threshold value
-    for i in range(0,bounds.n_points_centerline):
-        
-        old_alpha = alpha[i]
-        old_E_tr = E_tr[i]
-        
-        alpha[i] = compute_cohesive_energy_density(h_excavated_bounds[i])
-        E_tr[i] = compute_threshold_energy(h_excavated_bounds[i])
-        
-        print(i, old_alpha, alpha[i], " ", old_E_tr, E_tr[i])
+    #for i in range(0,bounds.n_points_centerline):
+    #    
+    #    old_alpha = alpha[i]
+    #    old_E_th = E_th[i]
+    #    
+    #    alpha[i] = compute_cohesive_energy_density(h_excavated_bounds[i])
+    #    E_th[i] = compute_threshold_energy(h_excavated_bounds[i])
+    #    
+    #    #print(i, old_alpha, alpha[i], " ", old_E_th, E_th[i])
+
+    #m_dot_area_eroded_old = m_dot_area_eroded
+    
+    ## check if the mass flow rate has been decreased
+    #for i in range(0, bounds.n_points_centerline):
+    #    soil.rho_bulk = compute_soil_density_depth(h_excavated_bounds[i])
+    #    r_centerline = bounds.r_centerlines_array[i]
+    #    compute_impinged_gas(h_nozzle, r_centerline)
+    #    compute_E_downward() 
+    #    m_dot_area_eroded[i] = compute_mass_erosion_rate(E_th[i], alpha[i])
+    #    #print(i, m_dot_area_eroded_old[i], m_dot_area_eroded[i])
+
     # ----------------------------------------------------------------------------------
     # Next Steps
     # ----------------------------------------------------------------------------------
@@ -167,5 +225,3 @@ def regolith_removal():
     #plt.xlim(bounds.min_centerline, bounds.max_centerline)
     #plt.ylim(1E-8, 1E1)
     #plt.show()
-        
-    return None

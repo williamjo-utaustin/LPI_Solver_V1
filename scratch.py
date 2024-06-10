@@ -19,9 +19,21 @@ from fun_nozzle import *
 from fun_impinged_gas import *
 from subroutines import *
 
-print(bounds.r_centerlines_array_2)
-plt.scatter(bounds.r_centerlines_array_2, np.ones(np.size(bounds.r_centerlines_array_2)))
-plt.show()
+
+ratio = (soil.rho_0 * cs.g * soil.D_bracket + soil.alpha_0)/ ((1100.700*1.62* soil.D_bracket + 0.2930747))
+print(soil.rho_0 * cs.g * soil.D_bracket + soil.alpha_0)
+print((1100.700*1.62* soil.D_bracket + 0.2930747))
+print(ratio)
+
+
+
+
+
+#print(bounds.r_centerlines_array_2)
+#plt.scatter(bounds.r_centerlines_array_2, np.ones(np.size(bounds.r_centerlines_array_2)))
+#plt.show()
+
+
 
 
 #h_displaced_old[i] = h_displaced[i]
