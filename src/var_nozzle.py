@@ -35,3 +35,7 @@ P_e = None
 T_e = None 
 rho_e = None
 v_e = None
+
+
+# nozzle descent
+v_descent = 0

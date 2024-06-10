@@ -5,6 +5,7 @@ sys.path.append('/Users/williamjo/Documents/LPI/Codes/plume_regolith_solver_v1/s
 
 import var_constants as cs
 import var_nozzle as nozzle
+import var_timestepping as timestep
 from fun_compressible import *
 
 
@@ -26,3 +27,9 @@ def compute_nozzle_exhaust():
     nozzle.rho_e = (nozzle.P_0/(nozzle.R_gas*nozzle.T_0)) / (rho0_over_rho(nozzle.Ma, nozzle.gamma))
     nozzle.v_e = nozzle.Ma * np.sqrt(nozzle.gamma * nozzle.R_gas * nozzle.T_e)
     return None
+
+
+def update_nozzle_height(h_nozzle):
+    # update the new nozzle velocity
+    h_nozzle = h_nozzle - (nozzle.v_descent * timestep.delta_t)
+    return h_nozzle
