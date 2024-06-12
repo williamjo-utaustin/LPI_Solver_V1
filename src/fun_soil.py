@@ -52,12 +52,41 @@ def compute_mass_erosion_rate(z):
 
 def compute_mass_eroded_quantities(h_nozzle):
     
+    n_bins_eroded_dt = 0
+    bin_eroded_id = np.zeros(bounds.n_points_centerline)
+
     for i in range(0, bounds.n_points_centerline):
+        
+        initial_m_dot_area_eroded = soil.m_dot_area_eroded[i]
+
         r_centerline = bounds.r_centerlines_array[i]
         compute_impinged_gas(h_nozzle, r_centerline)
+
+        imp.rho_gas_arr[i] = imp.rho_gas        
+        imp.p_gas_arr[i] = imp.p_gas
+        imp.v_gas_arr[i] = imp.v_gas      
+        imp.T_gas_arr[i] = imp.T_gas        
+        imp.v_T_arr[i] = imp.v_T        
+
         soil.m_dot_area_eroded[i], soil.E_th[i], soil.alpha[i] = compute_mass_erosion_rate(soil.h_excavated_bounds[i])
+
+        if (soil.m_dot_area_eroded[i] - initial_m_dot_area_eroded > 0):
+            
+            bin_eroded_id[n_bins_eroded_dt] = i
+            n_bins_eroded_dt = n_bins_eroded_dt + 1
+
+    # we only need to loop these variables instead of the whole loop 
+    #print(n_bins_eroded_dt, bin_eroded_id)
     
     # compute the ring mass erosion rate (kg/s) at each timestep at the midpoints
+    #for i in range(1,n_bins_eroded_dt):
+    #    
+    #    i_m1 = int(bin_eroded_id[i-1])
+    #    i_p0 = int(bin_eroded_id[i])
+
+    #    soil.m_dot_eroded_mid[i_m1] = ((soil.m_dot_area_eroded[i_p0] + soil.m_dot_area_eroded[i_m1])/2) * soil.ring_area[i_m1]
+
+    # keep for now this is correct! 
     for i in range(1,bounds.n_points_centerline):
         soil.m_dot_eroded_mid[i-1] = ((soil.m_dot_area_eroded[i] + soil.m_dot_area_eroded[i-1])/2) * soil.ring_area[i-1]
 
@@ -74,5 +103,6 @@ def set_new_excavation_depths():
     for i in range(1, bounds.n_points_centerline-1):
         soil.h_excavated_bounds[i] = (soil.h_excavated_mid[i-1] + soil.h_excavated_mid[i])/2
     soil.h_excavated_bounds[bounds.n_points_centerline-1] = soil.h_excavated_mid[bounds.n_points_centerline-2]
+    
     return None
 

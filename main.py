@@ -21,11 +21,9 @@ from subroutines import *
 
 # run main code
 compute_nozzle_exhaust()
+loop()
 
 #plot_initial_disturbed_altitude()
-
-regolith_removal()
-
 #d_particle = 1
 #
 #def dudt(t,u_p):

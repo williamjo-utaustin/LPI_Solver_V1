@@ -9,7 +9,8 @@ def compute_impinged_gas(h_nozzle, r_centerline):
     theta = np.arctan(r_centerline/h_nozzle)
     imp.rho_gas = nozzle.rho_e * (nozzle.k_bar/2) * (h_nozzle/(nozzle.D_nozzle/2))**(-2) * (np.cos(theta))**nozzle.k_bar
     p_normal_shock = nozzle.P_0 * pNS_over_p0(nozzle.Ma,nozzle.gamma)
-        # compute the gas stagnation pressure at the surface if the nozzle is far enough away
+    
+    # compute the gas stagnation pressure at the surface if the nozzle is far enough away
     surface_criteria = (h_nozzle/(nozzle.D_nozzle/2)) * np.sqrt(2/(nozzle.k_bar+2))
 
     if(surface_criteria > 1):
