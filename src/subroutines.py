@@ -11,6 +11,9 @@ import var_impinged_gas as imp
 from fun_impinged_gas import *
 from fun_soil import *
 from fun_nozzle import *
+from fun_integration import *
+
+import csv
 
 # ----------------------------------
 # need to modify this later
@@ -53,9 +56,9 @@ def loop():
     h_nozzle = 4000 #m
 
     print("Timestep,", "Depth Excavated,", "Threshold Energy,", "E_down,", "Alpha,","Mdot_flux", "M_area_eroded_inst", "Mdot_cumulative" )
-    for t in range(0,1000):
+    for t in range(0,10):
 
-
+        print("Writing at time t =", t * timestep.delta_t)
 
         # ------------------------------------------------------------------------------------------------
         #  Given a height h (input), array containing the radial distances from plume centerline (implict)
@@ -121,58 +124,132 @@ def loop():
         # Solve for: Average excavated density of lunar material for bins excavated by
         # the plume (Should increase as dig further down, will be used for MC simulation)
         # ----------------------------------------------------------------------------------------------        
-        avg_rho_p_excavated = np.zeros(bounds.n_points_centerline-1)
+        #avg_rho_p_excavated = np.empty(bounds.n_points_centerline-1)
+
+        if(t == 0):
+            avg_rho_p_excavated = np.ones(bounds.n_points_centerline-1) * compute_soil_density_depth(0)
+
+        avg_rho_p_excavated_old = avg_rho_p_excavated.copy()
+        #print(avg_rho_p_excavated_old)
+
+        index_count = np.zeros(bounds.n_points_centerline-1)
+        diff = np.zeros(bounds.n_points_centerline-1)
+        total_affected_indicies = 0
 
         # compute the average density of the material that has already been excavated
         for i in range(0,bounds.n_points_centerline-1):
+            
+            
             if((soil.h_excavated_mid[i] - h_excavated_mid_old[i]) > 0):
                 avg_rho_p_excavated[i],err = quad(compute_soil_density_depth, h_excavated_mid_old[i], soil.h_excavated_mid[i]) * 1/(soil.h_excavated_mid[i] - h_excavated_mid_old[i])
             else:
                 avg_rho_p_excavated[i] = compute_soil_density_depth(soil.h_excavated_mid[i])
+
+            diff[i] = np.abs(avg_rho_p_excavated[i] - avg_rho_p_excavated_old[i])        
+
+            if(np.abs(avg_rho_p_excavated[i] - avg_rho_p_excavated_old[i] > 0)):
+                index_count[total_affected_indicies] = i
+                total_affected_indicies = total_affected_indicies + 1
+
+        #print(index_count)
+        #print(total_affected_indicies)
+        #print(diff)
         # ----------------------------------------------------------------------------------------------        
         # ----------------------------------------------------------------------------------------------        
-        
         # Compute the ejecta speeds of each grain launched
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        # compute the properties of the gas at the midpoint of each bin
+        # Compute the properties of the gas at the midpoint of each bin
         rho_gas_arr_mid = np.zeros(bounds.n_points_centerline-1)
-        v_gas_arr_mid = np.zeros(bounds.n_points_centerline-1)
-        v_T_arr_mid = np.zeros(bounds.n_points_centerline-1)
+        u_gas_arr_mid = np.zeros(bounds.n_points_centerline-1)
         T_gas_arr_mid = np.zeros(bounds.n_points_centerline-1)
         P_gas_arr_mid = np.zeros(bounds.n_points_centerline-1)
+    
+        u_ej_ts = np.zeros([total_affected_indicies-1, np.size(d_particle) + 1])
+        ej_ts_props = np.zeros([total_affected_indicies-1, 5])
 
-        for i in range(0,bounds.n_points_centerline-1):
-            rho_gas_arr_mid[i] = (imp.rho_gas_arr[i] + imp.rho_gas_arr[i+1])/2
-            v_gas_arr_mid[i] = (imp.v_gas_arr[i] + imp.v_gas_arr[i+1])/2
-            T_gas_arr_mid[i] = (imp.T_gas_arr[i] + imp.T_gas_arr[i+1])/2
-            v_T_arr_mid[i] = (imp.v_T_arr[i] + imp.v_T_arr[i+1])/2
-            P_gas_arr_mid[i] = (imp.p_gas_arr[i] + imp.p_gas_arr[i+1])/2
+        #for i in range(10,11):
+        for i in range(0,total_affected_indicies-1):
 
+            i_n = int(index_count[i])
+            ip1 = int(index_count[i+1])
+
+            ej_ts_props[i, 0] = i_n
+            ej_ts_props[i, 1] = soil.r_midpoint[i_n]
+            ej_ts_props[i, 2] = avg_rho_p_excavated[i_n]
+            ej_ts_props[i, 3] = soil.m_excavated_inst[i_n]
+            ej_ts_props[i ,4] = soil.h_excavated_mid[i_n]
+
+
+            print("Integrating from index ", i_n, "to ", ip1, "Iteration #", i+1,"out of ",total_affected_indicies-1)
+
+            rho_gas_arr_mid[i_n] = (imp.rho_gas_arr[i_n] + imp.rho_gas_arr[ip1])/2
+            u_gas_arr_mid[i_n] = (imp.v_gas_arr[i_n] + imp.v_gas_arr[ip1])/2
+            T_gas_arr_mid[i_n] = (imp.T_gas_arr[i_n] + imp.T_gas_arr[ip1])/2
+            P_gas_arr_mid[i_n] = (imp.p_gas_arr[i_n] + imp.p_gas_arr[ip1])/2
+            
+            u_ej_ts[i,0] = i_n
+
+            for j in range(0,np.size(d_particle)):
+                
+                d_p = d_particle[j]
+                t_sub = 0
+                u_p = 0
+                x_n = 0
+
+                
+                for k in range(0,timestep.n_sub_timesteps):
+                    t_sub = t_sub + timestep.dt 
+                    u_p_save = u_p
+                    u_p = rk_4(dudt, u_p, t, timestep.dt, d_p, P_gas_arr_mid[i_n], rho_gas_arr_mid[i_n],  T_gas_arr_mid[i_n], u_gas_arr_mid[i_n], avg_rho_p_excavated[i_n])
+
+                    x_n = x_n + u_p * timestep.dt 
+                    if(x_n * np.tan(3 * np.pi/180) > timestep.baseline_height or (u_p-u_p_save)/u_p < 0.00001):
+                        
+                        u_ej_ts[i,j+1] = u_p
+                        
+                        break
+            
             #print(i, avg_rho_p_excavated[i], rho_gas_arr_mid[i], v_gas_arr_mid[i], T_gas_arr_mid[i], v_T_arr_mid[i], P_gas_arr_mid[i])
-        
             # only investigate the particles that have been moved
+
+        #print(P_gas_arr_mid[10], u_gas_arr_mid[10], T_gas_arr_mid[10], rho_gas_arr_mid[10])
+        
+        # write output to data file
+
+        print(t)
+        
+        np.savetxt("output/ejecta_velocities_"+str(t)+".csv", u_ej_ts, delimiter=',', fmt=' '.join(['%i'] + ['%.4e']*np.size(d_particle)))
+        np.savetxt("output/ejecta_properties_"+str(t)+".csv", ej_ts_props, delimiter=',', fmt=' '.join(['%i'] + ['%.8e']*4))
+        
+        #with open("output/ejecta_velocities_"+str(t)+".csv","w+") as my_csv:
+        #    csvWriter = csv.writer(my_csv,delimiter=',')
+        #    csvWriter.writerows(u_ej_ts)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
         # update the new nozzle velocity
         h_nozzle = update_nozzle_height(h_nozzle)
         
         # print statisics
-        if(np.mod(t,10)==0):
-            print(t, soil.h_excavated_bounds[860], soil.E_th[860], imp.E_downward, soil.alpha[860], soil.m_dot_area_eroded[860], soil.m_excavated_inst[860], soil.m_excavated_cumulative[860])
+        #if(np.mod(t,10)==0):
+        #    print(t, soil.h_excavated_bounds[860], soil.E_th[860], imp.E_downward, soil.alpha[860], soil.m_dot_area_eroded[860], soil.m_excavated_inst[860], soil.m_excavated_cumulative[860])
 
 
 
