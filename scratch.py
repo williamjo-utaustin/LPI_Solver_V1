@@ -51,9 +51,9 @@ def cd_sphere(Re, Kn):
         CD = 0.0
     elif Re > 8.0e6:
         CD = 0.2
-    elif Re > 0.0 and Re <= 2:
+    elif Re > 0.0 and Re <= 1:
         CD = (24.0/Re)
-    elif Re > 2 and Re <= 100.0:
+    elif Re > 1 and Re <= 100.0:
         p = np.array([4.22, -14.05, 34.87, 0.658])
         CD = np.polyval(p, 1.0/Re) 
     elif Re > 100.0 and Re <= 1.0e4:
@@ -74,11 +74,30 @@ def cd_sphere(Re, Kn):
     CD = CD/S_correction
     return CD
 
+def cd_sphere_2(Re):
+
+    if Re <= 0.0:
+        CD = 0.0
+    elif Re > 0.0 and Re <= 2:
+        CD = (24.0/Re)
+    elif Re >= 2 and Re < 500:
+        CD = 18.5 * Re **-0.6
+    else:
+        CD = 0.44
+    return CD
+
+
 def dudt(u, t, d_p):
     Kn_p = mean_free_path/d_p
     Re = (rho_gas * np.abs(u_gas - u) * d_p)/(A_const* T_gas ** beta)
+    
+    #print(Re)
+    
     C_D = cd_sphere(Re, Kn_p)
     F_D = (3.0*rho_gas*C_D)*(u_gas - u)**2/(4.0*rho_p*d_p)
+    
+    print(F_D + ((1 - (rho_gas/rho_p))*g))
+
     return F_D + ((1 - (rho_gas/rho_p))*g)
 
 def rk_4(func, u_n, t, dt, d_p):
@@ -90,11 +109,26 @@ def rk_4(func, u_n, t, dt, d_p):
     u_n_p1 = u_n + dt/6.0*(k1 + 2.0*k2 + 2.0*k3 + k4)
     return u_n_p1
 
-dt = 0.001
-n_timesteps = 100000
+dt = 0.01
+n_timesteps = 5000
 baseline_height = 0.3
 
 u_ej = np.zeros_like(param)
+
+
+#Re_vals = np.linspace(0.01,50000)
+#cd_vals = np.zeros_like(Re_vals)
+#cd_vals_2 = np.zeros_like(Re_vals)
+#
+#for i in range(0,np.size(Re_vals)):
+#    cd_vals[i] = cd_sphere(Re_vals[i], 1)
+#    cd_vals_2[i] = cd_sphere_2(Re_vals[i])
+#
+#plt.semilogx(Re_vals, 0.44 * np.ones_like(Re_vals))
+#plt.semilogx(Re_vals, cd_vals)
+#plt.semilogx(Re_vals, cd_vals_2)
+#plt.show()
+
 
 for j in range(0,np.size(param)):
     
@@ -109,11 +143,19 @@ for j in range(0,np.size(param)):
         u_p = rk_4(dudt, u_p, t, dt, d_p)
 
         x_n = x_n + u_p * dt
-        print(i, t, x_n, u_p)
-        if(x_n * np.tan(1.5*np.pi/180) > baseline_height or (u_p-u_p_save)/u_p < 0.00001):
+        #print(i, t, x_n, u_p)
+        #if(x_n * np.tan(1.5*np.pi/180) > baseline_height or (u_p-u_p_save)/u_p < 0.00001 or np.abs(u_p-u_gas)/u_gas < 0.00001):
+        if((u_p-u_p_save)/u_p < 0.00001 or np.abs(u_p-u_gas)/u_gas < 0.00001):
             u_ej[j] = u_p
             break
-
-plt.loglog(param, u_ej)
-#plt.ylim(1,1E2)
-plt.show()
+        plt.scatter(t, u_p, color = 'black')
+        #plt.xlim(0,250)
+        #plt.ylim(0,4000)
+        plt.xticks(fontsize = 18)
+        plt.yticks(fontsize = 18)
+        plt.xlabel("Time (s)", fontsize = 14)
+        plt.ylabel("Ejecta Speed (m/s)", fontsize = 14)
+    plt.show() 
+#plt.loglog(param, u_ej)
+##plt.ylim(1,1E2)
+#plt.show()

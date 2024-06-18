@@ -10,15 +10,15 @@ def rk_4(func, u_n, t, dt, d_p, p_gas, rho_gas, T_gas, u_gas, rho_p):
     u_n_p1 = u_n + dt/6.0*(k1 + 2.0*k2 + 2.0*k3 + k4)
     return u_n_p1
 
-def dudt(u, t, d_p, p_gas, rho_gas, T_gas, u_gas, rho_p):
-    A_const= 1.71575E-7
-    beta = 0.78
-    mean_free_path = np.sqrt(np.pi/(2 * p_gas * rho_gas)) * A_const * T_gas**beta
-    Kn_p = mean_free_path/d_p
-    Re = (rho_gas * np.abs(u_gas - u) * d_p)/(A_const* T_gas ** beta)
-    C_D = cd_sphere(Re, Kn_p)
-    F_D = (3.0*rho_gas*C_D)*(u_gas - u)**2/(4.0*rho_p*d_p)
-    return F_D + ((1 - (rho_gas/rho_p))*cs.g)
+#def dudt(u, t, d_p, p_gas, rho_gas, T_gas, u_gas, rho_p):
+#    A_const= 1.71575E-7
+#    beta = 0.78
+#    mean_free_path = np.sqrt(np.pi/(2 * p_gas * rho_gas)) * A_const * T_gas**beta
+#    Kn_p = mean_free_path/d_p
+#    Re = (rho_gas * np.abs(u_gas - u) * d_p)/(A_const* T_gas ** beta)
+#    C_D = cd_sphere(Re, Kn_p)
+#    F_D = (3.0*rho_gas*C_D)*(u_gas - u)**2/(4.0*rho_p*d_p)
+#    return F_D + ((1 - (rho_gas/rho_p))*cs.g)
 
 
 def cd_sphere(Re, Kn):
@@ -49,3 +49,29 @@ def cd_sphere(Re, Kn):
     S_correction = 1 + Kn * (2.514 + 0.8 * np.exp(-0.55/Kn))
     CD = CD/S_correction
     return CD
+
+def dudt(u_p, t, d_p, rho_p, u_g, p_g, rho_g, T_g):
+    
+    A_const= 1.71575E-7
+    beta = 0.78
+    mfp = np.sqrt(np.pi/(2 * p_g * rho_g)) * A_const * T_g**beta
+    
+    Kn = mfp/d_p
+    Re = (rho_g * np.abs(u_g - u_p) * d_p)/(A_const * T_g ** beta)
+    
+    if Re <= 0.0:
+        CD = 0.0
+    elif Re > 0.0 and Re <= 2:
+        CD = (24.0/Re)
+    elif Re >= 2 and Re < 500:
+        CD = 18.5 * Re **-0.6
+    else:
+        CD = 0.44
+
+    # add in correction factor to account for rarefied effects
+    S_correction = 1 + Kn * (2.514 + 0.8 * np.exp(-0.55/Kn))
+    CD = CD/S_correction
+
+    C_constant = 3 * rho_g * CD / (4 * rho_p * d_p)
+    return C_constant * (u_g - u_p)**2
+

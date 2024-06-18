@@ -26,6 +26,11 @@ def compute_nozzle_exhaust():
     nozzle.T_e = nozzle.T_0/(T0_over_T(nozzle.Ma, nozzle.gamma))
     nozzle.rho_e = (nozzle.P_0/(nozzle.R_gas*nozzle.T_0)) / (rho0_over_rho(nozzle.Ma, nozzle.gamma))
     nozzle.v_e = nozzle.Ma * np.sqrt(nozzle.gamma * nozzle.R_gas * nozzle.T_e)
+    
+    
+    
+    
+    
     return None
 
 

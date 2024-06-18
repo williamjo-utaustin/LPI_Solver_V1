@@ -14,6 +14,7 @@ from fun_nozzle import *
 from fun_integration import *
 
 import csv
+import time
 
 # ----------------------------------
 # need to modify this later
@@ -43,9 +44,9 @@ import csv
 #    plt.show()
 
 
-d_particle = np.asarray([multiplier * magnitude for magnitude in [1E-6, 1E-5, 1E-4, 1E-3] for multiplier in [1, 2, 3, 4, 5, 6, 7, 8, 9]])
 
 def loop():
+    d_particle = np.asarray([multiplier * magnitude for magnitude in [1E-6, 1E-5, 1E-4, 1E-3] for multiplier in [1, 2, 3, 4, 5, 6, 7, 8, 9]])
 
     # initialize_variables()
     # start from t = 0 or from a restart file
@@ -53,10 +54,22 @@ def loop():
     # unload the restart file
 
     # set the timestep (seconds)
-    h_nozzle = 4000 #m
+    h_nozzle = 20 #m
+
+    bounds_ej_ring = np.zeros([bounds.n_points_centerline, 4])
+
+    for i in range(1, bounds.n_points_centerline-1):
+        bounds_ej_ring[i-1,0] = i-1
+        bounds_ej_ring[i-1,1] = bounds.r_centerlines_array[i-1] 
+        bounds_ej_ring[i-1,2] = soil.r_midpoint[i-1]
+        bounds_ej_ring[i-1,3] = bounds.r_centerlines_array[i]
+
+    np.savetxt("output/ejecta_ring_bounds.csv", bounds_ej_ring, delimiter=',', fmt=' '.join(['%i'] + ['%.4e']*3), header = '# Ejecta Ring Radial Distances Away from Plume Centerline (Index, Min (m), Midpoint (m), Max (m))')
+
 
     print("Timestep,", "Depth Excavated,", "Threshold Energy,", "E_down,", "Alpha,","Mdot_flux", "M_area_eroded_inst", "Mdot_cumulative" )
-    for t in range(0,10):
+    
+    for t in range(0,1000):
 
         print("Writing at time t =", t * timestep.delta_t)
 
@@ -73,11 +86,9 @@ def loop():
         compute_mass_eroded_quantities(h_nozzle)
         # ----------------------------------------------------------------------------------------------
         # ----------------------------------------------------------------------------------------------
-        
-        
-        #for i in range(0,bounds.n_points_centerline):
-        #    print(i, imp.v_gas_arr[i], imp.rho_gas_arr[i], imp.T_gas_arr[i])
-
+                
+        #for i in range(0,bounds.n_points_centerline-1):
+        #    print(i, soil.r_midpoint[i], imp.v_gas_arr[i], imp.p_gas_arr[i], imp.rho_gas_arr[i], imp.T_gas_arr[i])
 
         # ----------------------------------------------------------------------------------------------
         # The following block solves for the excavated height given a differential ring dA, its area,
@@ -108,6 +119,19 @@ def loop():
         # ----------------------------------------------------------------------------------------------
         # ----------------------------------------------------------------------------------------------
 
+        fig = plt.figure(figsize=(10, 10))
+        plt.title("Time = "+str(t * timestep.delta_t) + " s", fontsize = 18)
+        plt.plot(soil.r_midpoint, soil.h_excavated_mid, linewidth = 2)
+        #plt.semilogy(soil.r_midpoint, soil.h_excavated_mid, linewidth = 2)
+        plt.xlabel("Distance from Plume Centerline (m)", fontsize = 18)
+        plt.ylabel("Excavation Depth (m)", fontsize = 18)
+        plt.xticks(fontsize = 18)
+        plt.yticks(fontsize = 18)
+        plt.xlim(0,10)
+        #plt.xlim(0,6000)
+        plt.ylim(1E0, 1E-5)
+        plt.savefig("output/growth_"+str(t)+".png", dpi = 300)
+        plt.close()
 
         # ----------------------------------------------------------------------------------------------
         # The following block updates the excavation depths of each bin with new values
@@ -163,20 +187,22 @@ def loop():
         T_gas_arr_mid = np.zeros(bounds.n_points_centerline-1)
         P_gas_arr_mid = np.zeros(bounds.n_points_centerline-1)
     
-        u_ej_ts = np.zeros([total_affected_indicies-1, np.size(d_particle) + 1])
-        ej_ts_props = np.zeros([total_affected_indicies-1, 5])
+        u_ej_timestep = np.zeros([total_affected_indicies-1, np.size(d_particle) + 1])
+        offset_ej_dist_timestep = np.zeros([total_affected_indicies-1, np.size(d_particle) + 1])
+        offset_ej_time_timestep = np.zeros([total_affected_indicies-1, np.size(d_particle) + 1])
+        ej_timestep_props = np.zeros([total_affected_indicies-1, 5])
 
-        #for i in range(10,11):
+
         for i in range(0,total_affected_indicies-1):
 
             i_n = int(index_count[i])
             ip1 = int(index_count[i+1])
 
-            ej_ts_props[i, 0] = i_n
-            ej_ts_props[i, 1] = soil.r_midpoint[i_n]
-            ej_ts_props[i, 2] = avg_rho_p_excavated[i_n]
-            ej_ts_props[i, 3] = soil.m_excavated_inst[i_n]
-            ej_ts_props[i ,4] = soil.h_excavated_mid[i_n]
+            ej_timestep_props[i, 0] = i_n
+            ej_timestep_props[i, 1] = soil.r_midpoint[i_n]
+            ej_timestep_props[i, 2] = avg_rho_p_excavated[i_n]
+            ej_timestep_props[i, 3] = soil.m_excavated_inst[i_n]
+            ej_timestep_props[i ,4] = soil.h_excavated_mid[i_n]
 
 
             print("Integrating from index ", i_n, "to ", ip1, "Iteration #", i+1,"out of ",total_affected_indicies-1)
@@ -186,27 +212,63 @@ def loop():
             T_gas_arr_mid[i_n] = (imp.T_gas_arr[i_n] + imp.T_gas_arr[ip1])/2
             P_gas_arr_mid[i_n] = (imp.p_gas_arr[i_n] + imp.p_gas_arr[ip1])/2
             
-            u_ej_ts[i,0] = i_n
+            u_ej_timestep[i,0] = i_n
+            offset_ej_dist_timestep[i,0] = i_n
+            offset_ej_time_timestep[i,0] = i_n
 
             for j in range(0,np.size(d_particle)):
                 
                 d_p = d_particle[j]
-                t_sub = 0
+                x_p = 0
+                y_p = 0
                 u_p = 0
-                x_n = 0
+                t_sub = 0
 
-                
-                for k in range(0,timestep.n_sub_timesteps):
-                    t_sub = t_sub + timestep.dt 
-                    u_p_save = u_p
-                    u_p = rk_4(dudt, u_p, t, timestep.dt, d_p, P_gas_arr_mid[i_n], rho_gas_arr_mid[i_n],  T_gas_arr_mid[i_n], u_gas_arr_mid[i_n], avg_rho_p_excavated[i_n])
+                # number of array points
+                du = 0.01
+                n_timesteps = (int(u_gas_arr_mid[i_n]/du) - 1)
 
-                    x_n = x_n + u_p * timestep.dt 
-                    if(x_n * np.tan(3 * np.pi/180) > timestep.baseline_height or (u_p-u_p_save)/u_p < 0.00001):
-                        
-                        u_ej_ts[i,j+1] = u_p
-                        
+                t_array = np.zeros(n_timesteps)
+                u_p_array = np.zeros(n_timesteps)
+    
+                x_p_array = np.zeros(n_timesteps)
+                y_p_array = np.zeros(n_timesteps)
+
+                for ts in range (0, n_timesteps):
+
+                    u_p_array[ts] = u_p
+                    x_p_array[ts] = x_p
+                    y_p_array[ts] = y_p    
+    
+                    t_array[ts] = t_sub
+        
+                    if (y_p > 0.03):
+                        u_ej_timestep[i,j+1] = u_p
+                        offset_ej_dist_timestep[i,j+1] = x_p
+                        offset_ej_time_timestep[i,j+1] = t
                         break
+
+                    delta_t = du/(dudt(u_p, ts, d_p, avg_rho_p_excavated[i_n], u_gas_arr_mid[i_n], P_gas_arr_mid[i_n], rho_gas_arr_mid[i_n], T_gas_arr_mid[i_n]))
+
+                    u_p = u_p + du
+                    t_sub = t_sub + delta_t
+
+                    x_p = x_p + (u_p * delta_t) * np.cos(3 * np.pi/180)
+                    y_p = y_p + (u_p * delta_t) * np.sin(3 * np.pi/180)
+    
+                
+                #for k in range(0,timestep.n_sub_timesteps):
+                #    t_sub = t_sub + timestep.dt 
+                #    u_p_save = u_p
+                #    u_p = rk_4(dudt, u_p, t, timestep.dt, d_p, P_gas_arr_mid[i_n], rho_gas_arr_mid[i_n],  T_gas_arr_mid[i_n], u_gas_arr_mid[i_n], avg_rho_p_excavated[i_n])
+
+                #    x_n = x_n + u_p * timestep.dt 
+                #    if(x_n * np.tan(3 * np.pi/180) > timestep.baseline_height or (u_p-u_p_save)/u_p < 0.00001):
+                #        
+                #        u_ej_timestep[i,j+1] = u_p
+                #        offset_ej_dist_timestep[i,j+1] = x_n
+                #        offset_ej_time_timestep[i,j+1] = t_sub
+                #        break
             
             #print(i, avg_rho_p_excavated[i], rho_gas_arr_mid[i], v_gas_arr_mid[i], T_gas_arr_mid[i], v_T_arr_mid[i], P_gas_arr_mid[i])
             # only investigate the particles that have been moved
@@ -216,27 +278,16 @@ def loop():
         # write output to data file
 
         print(t)
-        
-        np.savetxt("output/ejecta_velocities_"+str(t)+".csv", u_ej_ts, delimiter=',', fmt=' '.join(['%i'] + ['%.4e']*np.size(d_particle)))
-        np.savetxt("output/ejecta_properties_"+str(t)+".csv", ej_ts_props, delimiter=',', fmt=' '.join(['%i'] + ['%.8e']*4))
-        
+
+        # saving values
+        np.savetxt("output/ejecta_properties_"+str(t)+".csv", ej_timestep_props, delimiter=',', fmt=' '.join(['%i'] + ['%.8e']*4), header = '# header = Nozzle Height (m) ' + str(h_nozzle)+', Offset angle (3 deg), ' + 'Bin Index, Bin Midpoint Location (m), Excavated Density (kg/m^3), Instantaneous Mass Excavated (kg), Total Height Excavated (m)')
+        np.savetxt("output/ejecta_velocities_"+str(t)+".csv", u_ej_timestep, delimiter=',', fmt=' '.join(['%i'] + ['%.4e']*np.size(d_particle)), header = '# Nozzle Height (m) ' + str(h_nozzle)+', Offset angle (3 deg), '+' Ejecta Speeds by Bin Index and Particle Size (O(1), O(10), O(100), O(1000) microns) in sets of 1, 2, 3, 4, 5, 6, 7, 8, 9')
+        np.savetxt("output/ejecta_offset_distances_"+str(t)+".csv", offset_ej_dist_timestep, delimiter=',', fmt=' '.join(['%i'] + ['%.4e']*np.size(d_particle)), header = '# header = Nozzle Height (m) ' + str(h_nozzle)+', Offset angle (3 deg), ' + 'Ejecta Distance Offset by Bin Index and Particle Size (O(1), O(10), O(100), O(1000) microns) in sets of 1, 2, 3, 4, 5, 6, 7, 8, 9')
+        np.savetxt("output/ejecta_offset_time_"+str(t)+".csv", offset_ej_time_timestep, delimiter=',', fmt=' '.join(['%i'] + ['%.4e']*np.size(d_particle)), header = '# header = Nozzle Height (m) ' + str(h_nozzle)+', Offset angle (3 deg), ' + 'Ejecta Time Offset by Bin Index and Particle Size (O(1), O(10), O(100), O(1000) microns) in sets of 1, 2, 3, 4, 5, 6, 7, 8, 9')
+
         #with open("output/ejecta_velocities_"+str(t)+".csv","w+") as my_csv:
         #    csvWriter = csv.writer(my_csv,delimiter=',')
-        #    csvWriter.writerows(u_ej_ts)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        #    csvWriter.writerows(u_ej_timestep)
 
 
 
