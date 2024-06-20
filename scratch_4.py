@@ -26,16 +26,16 @@ def dudt(u_p, t, d_p, u_g, p_g, rho_g, T_g):
     CD = CD/S_correction
 
     C_constant = 3 * rho_g * CD / (4 * rho_p * d_p)
-    return C_constant * (u_g - u_p)**2
-    #return C_constant * (u_g - u_p)**2 + (1 - rho_g/rho_p) * 1.62
+    #return C_constant * (u_g - u_p)**2
+    return C_constant * (u_g - u_p)**2 + (1 - rho_g/rho_p) * 1.62
 
 # adaptive timestepping
 #r_d = 2400
-u_gas = 3665
-rho_p = 1100.35185
-rho_gas = 6.929E-11
-p_gas = 0.001376
-T_gas = 4762
+#u_gas = 3665
+#rho_p = 1100.35185
+#rho_gas = 6.929E-11
+#p_gas = 0.001376
+#T_gas = 4762
 
 #u_gas = 11.48
 #rho_p = 1100.35185
@@ -72,6 +72,17 @@ T_gas = 4762
 #rho_gas = 0.0008873
 #p_gas = 11762
 #T_gas = 3159.883
+#data = np.genfromtxt('data/FontesEtAlDigitizedVelocity_40ton_1km.csv', delimiter= ',')
+
+
+# 7 m altitude test case
+r_d = 1
+u_gas = 1300
+rho_p = 1100.35
+rho_gas = 3.01E-5
+p_gas = 721
+T_gas = 4439
+data = np.genfromtxt('data/FontesEtAlDigitizedVelocity_40ton_7km.csv', delimiter= ',')
 
 A_const= 1.71575E-7
 beta = 0.78
@@ -112,7 +123,7 @@ for i in range(0, np.size(d_particle_array)):
     
         t_array[ts] = t
         
-        if (y_p > 0.03):
+        if (y_p > 0.003):
             u_ej[i] = u_p
             break
 
@@ -128,8 +139,15 @@ for i in range(0, np.size(d_particle_array)):
         #print(t, x_p, y_p, u_p)
     
 
+
 #plt.plot(d_p, x_p)
-plt.loglog(d_particle_array, u_ej, marker = 'o', linewidth = 2)
+plt.loglog(data[:,0], data[:,1], linewidth = 3, label = 'Fontes et al. (2022)')
+plt.loglog(d_particle_array, u_ej, linewidth = 3, label = 'ODE Computation')
 plt.xlim(1E-6, 1E-3)
+plt.xticks(fontsize = 18)
+plt.yticks(fontsize = 18)
+plt.xlabel("Particle Diameter (m)", fontsize = 18)
+plt.ylabel("Ejecta Velocity (m/s)",fontsize = 18)
+plt.legend(fontsize = 18)
 #plt.ylim(1E0, 1E4)
 plt.show()
