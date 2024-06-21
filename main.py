@@ -14,7 +14,7 @@ import var_range_of_interest as bounds
 
 # import functions
 from fun_compressible import *
-from fun_soil import 
+from fun_soil import *
 from fun_nozzle import *
 from fun_impinged_gas import *
 from subroutines import *

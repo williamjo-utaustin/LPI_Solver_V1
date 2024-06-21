@@ -1,24 +1,13 @@
 import numpy as np
 import var_constants as cs
+import var_range_of_interest as bounds
+import var_soil as soil
 
-def rk_4(func, u_n, t, dt, d_p, p_gas, rho_gas, T_gas, u_gas, rho_p):
-    dt2 = dt/2.0
-    k1 = func(u_n, t, d_p, p_gas, rho_gas, T_gas, u_gas, rho_p)
-    k2 = func(u_n + k1*dt2, t + dt2, d_p, p_gas, rho_gas, T_gas, u_gas, rho_p)
-    k3 = func(u_n + k2*dt2, t + dt2, d_p, p_gas, rho_gas, T_gas, u_gas, rho_p)
-    k4 = func(u_n + k3*dt, t + dt, d_p, p_gas, rho_gas, T_gas, u_gas, rho_p)
-    u_n_p1 = u_n + dt/6.0*(k1 + 2.0*k2 + 2.0*k3 + k4)
-    return u_n_p1
+import var_impinged_gas as imp
 
-#def dudt(u, t, d_p, p_gas, rho_gas, T_gas, u_gas, rho_p):
-#    A_const= 1.71575E-7
-#    beta = 0.78
-#    mean_free_path = np.sqrt(np.pi/(2 * p_gas * rho_gas)) * A_const * T_gas**beta
-#    Kn_p = mean_free_path/d_p
-#    Re = (rho_gas * np.abs(u_gas - u) * d_p)/(A_const* T_gas ** beta)
-#    C_D = cd_sphere(Re, Kn_p)
-#    F_D = (3.0*rho_gas*C_D)*(u_gas - u)**2/(4.0*rho_p*d_p)
-#    return F_D + ((1 - (rho_gas/rho_p))*cs.g)
+from fun_soil import *
+from fun_integration import *
+
 
 
 def cd_sphere(Re, Kn):
@@ -75,3 +64,114 @@ def dudt(u_p, t, d_p, rho_p, u_g, p_g, rho_g, T_g):
     C_constant = 3 * rho_g * CD / (4 * rho_p * d_p)
     return C_constant * (u_g - u_p)**2
 
+
+def determine_ejecta_props(t):
+    
+    # copy the contents of density array (will be the previous timestep)
+    avg_rho_p_excavated_old = soil.avg_rho_p_excavated.copy()
+
+    # create an index count, and counter for total affected indices
+    index_count = np.zeros(bounds.n_points_centerline-1)
+    total_affected_indices = 0
+
+    # compute the average density of the material that has already been excavated
+    # loop through all bins in the centerline array
+    for i in range(0,bounds.n_points_centerline-1):
+        
+        # if the excavated height at this current timestep is deeper than the previous timestep (has been dug)
+        # compute the average density of the soil from the depth dug
+        if((soil.h_excavated_mid[i] - soil.h_excavated_mid_old[i]) > 0):
+            soil.avg_rho_p_excavated[i],err = quad(compute_soil_density_depth, soil.h_excavated_mid_old[i], soil.h_excavated_mid[i]) * 1/(soil.h_excavated_mid[i] - soil.h_excavated_mid_old[i])
+        
+        # compute the density at the excavated height
+        else:
+            soil.avg_rho_p_excavated[i] = compute_soil_density_depth(soil.h_excavated_mid[i])  
+
+        # if the bin has been excavated at this timestep, there should be a change in height
+        if(np.abs(soil.avg_rho_p_excavated[i] - avg_rho_p_excavated_old[i] > 0)):
+            
+            # write down the bin number in a list called 'index count'
+            # move to the next index in index count
+            index_count[total_affected_indices] = i
+            total_affected_indices = total_affected_indices + 1
+   
+    rho_gas_arr_mid = np.zeros(bounds.n_points_centerline-1)
+    u_gas_arr_mid = np.zeros(bounds.n_points_centerline-1)
+    T_gas_arr_mid = np.zeros(bounds.n_points_centerline-1)
+    P_gas_arr_mid = np.zeros(bounds.n_points_centerline-1)
+
+
+    u_ej_timestep = np.zeros([total_affected_indices-1, np.size(soil.d_particle) + 1])
+    offset_ej_dist_timestep = np.zeros([total_affected_indices-1, np.size(soil.d_particle) + 1])
+    offset_ej_time_timestep = np.zeros([total_affected_indices-1, np.size(soil. d_particle) + 1])
+    ej_timestep_props = np.zeros([total_affected_indices-1, 5])
+
+    for i in range(0,total_affected_indices-1):
+
+        i_n = int(index_count[i])
+        ip1 = int(index_count[i+1])
+
+        ej_timestep_props[i, 0] = i_n
+        ej_timestep_props[i, 1] = soil.r_midpoint[i_n]
+        ej_timestep_props[i, 2] = soil.avg_rho_p_excavated[i_n]
+        ej_timestep_props[i, 3] = soil.m_excavated_inst[i_n]
+        ej_timestep_props[i ,4] = soil.h_excavated_mid[i_n]
+
+
+        print("Integrating from index ", i_n, "to ", ip1, "Iteration #", i+1,"out of ",total_affected_indices-1)
+
+        rho_gas_arr_mid[i_n] = (imp.rho_gas_arr[i_n] + imp.rho_gas_arr[ip1])/2
+        u_gas_arr_mid[i_n] = (imp.v_gas_arr[i_n] + imp.v_gas_arr[ip1])/2
+        T_gas_arr_mid[i_n] = (imp.T_gas_arr[i_n] + imp.T_gas_arr[ip1])/2
+        P_gas_arr_mid[i_n] = (imp.p_gas_arr[i_n] + imp.p_gas_arr[ip1])/2
+
+
+        #print(u_gas_arr_mid[i_n])
+
+        u_ej_timestep[i,0] = i_n
+        offset_ej_dist_timestep[i,0] = i_n
+        offset_ej_time_timestep[i,0] = i_n
+
+        for j in range(0,np.size(soil.d_particle)):
+            
+            d_p = soil.d_particle[j]
+            x_p = 0
+            y_p = 0
+            u_p = 0
+            t_sub = 0
+
+            # number of array points
+            du = 0.01
+            
+            n_timesteps = (int(u_gas_arr_mid[i_n]/du) - 1)
+
+            t_array = np.zeros(n_timesteps)
+            u_p_array = np.zeros(n_timesteps)
+    
+            x_p_array = np.zeros(n_timesteps)
+            y_p_array = np.zeros(n_timesteps)
+
+            for ts in range (0, n_timesteps):
+
+                u_p_array[ts] = u_p
+                x_p_array[ts] = x_p
+                y_p_array[ts] = y_p    
+    
+                t_array[ts] = t_sub
+    
+                if (y_p > 0.03):
+                    u_ej_timestep[i,j+1] = u_p
+                    offset_ej_dist_timestep[i,j+1] = x_p
+                    offset_ej_time_timestep[i,j+1] = t_sub
+                    break
+
+                delta_t = du/(dudt(u_p, ts, d_p, soil.avg_rho_p_excavated[i_n], u_gas_arr_mid[i_n], P_gas_arr_mid[i_n], rho_gas_arr_mid[i_n], T_gas_arr_mid[i_n]))
+
+                u_p = u_p + du
+                t_sub = t_sub + delta_t
+
+                x_p = x_p + (u_p * delta_t) * np.cos(3 * np.pi/180)
+                y_p = y_p + (u_p * delta_t) * np.sin(3 * np.pi/180)
+
+
+    return u_ej_timestep, offset_ej_dist_timestep, offset_ej_time_timestep, ej_timestep_props

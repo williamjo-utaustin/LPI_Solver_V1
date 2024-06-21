@@ -70,6 +70,9 @@ def compute_mass_eroded_quantities(h_nozzle):
 
         soil.m_dot_area_eroded[i], soil.E_th[i], soil.alpha[i] = compute_mass_erosion_rate(soil.h_excavated_bounds[i])
 
+
+        #print(i, imp.v_gas_arr[i], soil.m_dot_area_eroded[i], soil.E_th[i], soil.alpha[i])
+
         if (soil.m_dot_area_eroded[i] - initial_m_dot_area_eroded > 0):
             
             bin_eroded_id[n_bins_eroded_dt] = i
@@ -86,15 +89,19 @@ def compute_mass_eroded_quantities(h_nozzle):
 
     #    soil.m_dot_eroded_mid[i_m1] = ((soil.m_dot_area_eroded[i_p0] + soil.m_dot_area_eroded[i_m1])/2) * soil.ring_area[i_m1]
 
-    # keep for now this is correct! 
-    for i in range(1,bounds.n_points_centerline):
-        soil.m_dot_eroded_mid[i-1] = ((soil.m_dot_area_eroded[i] + soil.m_dot_area_eroded[i-1])/2) * soil.ring_area[i-1]
+    for i in range(0, bounds.n_points_centerline-1):
+        soil.m_dot_eroded_mid[i] = ((soil.m_dot_area_eroded[i] + soil.m_dot_area_eroded[i+1])/2) * soil.ring_area[i]
+        #print("test", i, soil.m_dot_eroded_mid[i], soil.m_dot_eroded_mid[i]/soil.ring_area[i])
+
 
     # compute the total mass eroded in each ring for one timestep
     soil.m_excavated_inst = soil.m_dot_eroded_mid * timestep.delta_t
 
     # compute the cumulative total mass eroded in each ring
     soil.m_excavated_cumulative = soil.m_excavated_cumulative + soil.m_excavated_inst
+    
+    #for i in range(0, bounds.n_points_centerline-1):
+    #    print("test", i, soil.m_dot_eroded_mid[i], soil.m_dot_eroded_mid[i]/soil.ring_area[i], soil.m_excavated_inst[i], soil.m_excavated_cumulative[i])
 
     return None
 
@@ -106,3 +113,21 @@ def set_new_excavation_depths():
     
     return None
 
+
+def integral_equation(h_new_exc, h_old_exc, mass_excavated):
+    integral_equation = mass_excavated - quad(compute_soil_density_depth, h_old_exc, h_new_exc)[0]
+    return integral_equation
+
+
+def solve_excavation_depths():
+        
+    for i in range(0,bounds.n_points_centerline-1):
+
+        # save excavation depth for current timestep
+        soil.h_excavated_mid_old[i] = soil.h_excavated_mid[i]
+
+        # solve for the surficial density (kg/m^2)
+        soil.surf_den_excavated[i] = (soil.m_excavated_inst[i])/soil.ring_area[i]
+        soil.h_excavated_mid[i] = fsolve(integral_equation, soil.h_excavated_mid_old[i], args = (soil.h_excavated_mid_old[i], soil.surf_den_excavated[i]))
+
+    return None

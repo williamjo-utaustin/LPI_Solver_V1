@@ -102,7 +102,7 @@ for i in range(0, np.size(d_particle_array)):
     t = 0
 
     # number of array points
-    du = 0.01
+    du = 1
     n_timesteps = (int(u_gas/du) - 1)
 
     t_array = np.zeros(n_timesteps)
@@ -116,6 +116,7 @@ for i in range(0, np.size(d_particle_array)):
     print(d_p) 
     for ts in range (0, n_timesteps):
 
+        print(ts)
         u_p_array[ts] = u_p
         
         x_p_array[ts] = x_p
@@ -123,9 +124,9 @@ for i in range(0, np.size(d_particle_array)):
     
         t_array[ts] = t
         
-        if (y_p > 0.003):
-            u_ej[i] = u_p
-            break
+        #if (y_p > 0.003):
+        #    u_ej[i] = u_p
+        #    break
 
 
         delta_t = du/(dudt(u_p, t, d_p, u_gas, p_gas, rho_gas, T_gas))
@@ -133,10 +134,20 @@ for i in range(0, np.size(d_particle_array)):
         u_p = u_p + du
         t = t + delta_t
 
+
         x_p = x_p + (u_p * delta_t) * np.cos(3 * np.pi/180)
         y_p = y_p + (u_p * delta_t) * np.sin(3 * np.pi/180)
 
         #print(t, x_p, y_p, u_p)
+        plt.scatter(t, u_p, color = 'blue')
+
+    plt.xlim(0,0.01)
+    plt.ylim(0,1500)
+    plt.xticks(fontsize = 18)
+    plt.yticks(fontsize = 18)
+    plt.xlabel("Time (s)", fontsize = 18)
+    plt.ylabel("Velocity (m/s)", fontsize = 18)
+    plt.show()
     
 
 

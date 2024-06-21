@@ -1,4 +1,4 @@
-delta_t = 1 # global ts for spacecraft descent
+delta_t = 0.01 # global ts for spacecraft descent
 
 dt = 0.001 # subtimestep for ejecta speed integration
 n_sub_timesteps = 100000 # maximum number of timesteps

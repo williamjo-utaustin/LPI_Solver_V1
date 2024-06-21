@@ -19,6 +19,8 @@ h = 8.0/100 # From Metzger (2024)
 
 k_cohesion = 50 #kg/m^3 (can change)
 
+d_particle = np.asarray([multiplier * magnitude for magnitude in [1E-6, 1E-5, 1E-4, 1E-3] for multiplier in [1, 2, 3, 4, 5, 6, 7, 8, 9]])
+
 rho_bulk = None
 E_downward = None
 
@@ -36,6 +38,7 @@ m_excavated_cumulative = np.zeros(bounds.n_points_centerline-1)
 h_excavated_bounds = np.zeros(bounds.n_points_centerline)
 h_excavated_mid = np.zeros(bounds.n_points_centerline-1)
 h_excavated_mid_old = np.zeros(bounds.n_points_centerline-1)
+
 surf_den_excavated = np.zeros(bounds.n_points_centerline-1)
 
 # initialize densities
@@ -47,10 +50,13 @@ for i in range(1,bounds.n_points_centerline):
     r_midpoint[i-1] = (bounds.r_centerlines_array[i] + bounds.r_centerlines_array[i-1])/2
 
 # compute the ring areas
-for i in range(1,bounds.n_points_centerline):
-    ring_area[i-1] = np.pi * ((bounds.r_centerlines_array[i])**2 - (bounds.r_centerlines_array[i-1])**2) 
+for i in range(0,bounds.n_points_centerline-1):
+    ring_area[i] = np.pi * ((bounds.r_centerlines_array[i+1])**2 - (bounds.r_centerlines_array[i])**2) 
     #print(i-1, "to", i, bounds.r_centerlines_array[i-1], "to", bounds.r_centerlines_array[i], excavate.ring_area[i-1])
 
 for i in range(0,bounds.n_points_centerline):
     alpha[i] = compute_cohesive_energy_density(0)
     E_th[i] = compute_threshold_energy(0)
+
+
+avg_rho_p_excavated = np.ones(bounds.n_points_centerline-1)

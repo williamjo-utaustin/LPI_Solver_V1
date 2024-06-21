@@ -7,7 +7,7 @@ n_points_altitude = 9
 
 min_centerline = 0
 max_centerline = 100
-n_points_centerline = 100
+n_points_centerline = 25
 
 # option to set a 
 h_nozzle_array = np.linspace(min_altitude, max_altitude, n_points_altitude)
