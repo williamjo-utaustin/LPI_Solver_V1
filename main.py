@@ -24,16 +24,3 @@ compute_nozzle_exhaust()
 loop()
 
 #plot_initial_disturbed_altitude()
-#d_particle = 1
-#
-#def dudt(t,u_p):
-#    C_d = 0.40
-#    A_p = 4 * np.pi * d_particle**2
-#    m_p = soil.rho_p * (4/3) * np.pi * (d_particle/2)**3
-#    return (C_d * A_p * (rho_gas/2) * (v_gas - u_p)**2)/m_p
-#
-#t_span = np.linspace(0,1,1000)
-#yinit = [0]
-#sol = integrate.solve_ivp(lambda t, u_p: dudt(t,u_p),  [t_span[0], t_span[-1]], yinit, method='RK45')
-#plt.semilogy(sol.t,sol.y[0])
-#plt.show()
