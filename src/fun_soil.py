@@ -71,7 +71,7 @@ def compute_mass_eroded_quantities(h_nozzle):
         soil.m_dot_area_eroded[i], soil.E_th[i], soil.alpha[i] = compute_mass_erosion_rate(soil.h_excavated_bounds[i])
 
 
-        #print(i, imp.v_gas_arr[i], soil.m_dot_area_eroded[i], soil.E_th[i], soil.alpha[i])
+        print(i, r_centerline, imp.v_gas_arr[i], soil.m_dot_area_eroded[i], imp.E_downward, soil.E_th[i], soil.alpha[i])
 
         if (soil.m_dot_area_eroded[i] - initial_m_dot_area_eroded > 0):
             

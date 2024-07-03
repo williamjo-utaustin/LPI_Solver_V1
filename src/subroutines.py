@@ -21,7 +21,8 @@ import time
 
 def loop():
     
-    h_nozzle = 33 #m
+    h_nozzle =  31.5 #m
+    min_altitude = 1 # height of lander
 
     bounds_ej_ring = np.zeros([bounds.n_points_centerline, 4])
 
@@ -95,21 +96,8 @@ def loop():
         # ----------------------------------------------------------------------------------------------
         # Step 8: Output the ejecta properties for the next timestep
         # ----------------------------------------------------------------------------------------------        
-        write_ejecta_props(t+1, h_nozzle, ej_timestep_props, u_ej_timestep, offset_ej_dist_timestep, offset_ej_time_timestep)
+        write_ejecta_props(t, h_nozzle, ej_timestep_props, u_ej_timestep, offset_ej_dist_timestep, offset_ej_time_timestep)
         # ----------------------------------------------------------------------------------------------        
-
-
-        
-
-
-
-
-
-
-
-
-
-
 
         # ----------------------------------------------------------------------------------------------
         # Step 9: Update the new nozzle velocity
@@ -117,6 +105,8 @@ def loop():
         h_nozzle = update_nozzle_height(h_nozzle)
         # ----------------------------------------------------------------------------------------------        
 
+        if(h_nozzle < min_altitude):
+            break
     return None
     
 # ----------------------------------

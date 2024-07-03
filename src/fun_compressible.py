@@ -1,17 +1,17 @@
 import numpy as np
 
 def A_over_Astar(M, gamma):
-    return 1 / M * ((1 + (gamma - 1) / 2 * M ** 2) / ((gamma + 1) / 2)) ** ((gamma + 1) / (2 * (gamma - 1)))
+    return 1 / M * ((1 + ((gamma - 1) / 2) * M ** 2) / ((gamma + 1) / 2)) ** ((gamma + 1) / (2 * (gamma - 1)))
 
 
 def mDot_over_A(M, gamma, p0, R, T0):
-    const = p0 / np.sqrt(R * T0)
-    f = np.sqrt(gamma) * M / (1 + (gamma - 1) / 2 * M ** 2) ** ((gamma + 1) / (2 * (gamma - 1)))
+    const = p0 / np.sqrt(T0)
+    f = np.sqrt(gamma/R) * M * ((1 + ((gamma - 1) / 2) * M ** 2) ** (-(gamma + 1) / (2 * (gamma - 1))))
     return const * f
 
 
 def T0_over_T(M, gamma):
-    return 1 + (gamma - 1) / 2 * M ** 2
+    return 1 + ((gamma - 1) / 2) * M ** 2
 
 
 def p0_over_p(M, gamma):

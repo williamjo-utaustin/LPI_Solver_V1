@@ -37,7 +37,7 @@ def plot_erosion_profile(ts, r_from_centerline, d_excavated):
             plt.xticks(fontsize = 18)
             plt.yticks(fontsize = 18)
             #plt.xlim(0,10)
-            plt.xlim(0,100)
+            plt.xlim(0, 100)
             plt.ylim(0.25, 0)
             #plt.gca().set_aspect('equal')
             plt.savefig("output/growth_"+str(ts)+".png", dpi = 300)

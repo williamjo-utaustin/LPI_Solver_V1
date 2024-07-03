@@ -6,13 +6,24 @@ from fun_compressible import *
 # ---------------------------------------------------------
 # Change only these variables (Input Conditions)
 # ---------------------------------------------------------
-gamma = 1.2
-#P_0 = 19046 # Pascals (40 Ton)
-P_0 = 69259.33 # Pascals (40 Ton)
-T_0 = 4875 # Kelvin
-Ma = 2.5
-D_nozzle = 1.6 # meters
+#gamma = 1.2
+#P_0 = 19046 # Pascals (11 Ton)
+##P_0 = 69259.33 # Pascals (40 Ton)
+#T_0 = 4875 # Kelvin
+#Ma = 2.5
+#D_nozzle = 1.6 # meters
 # ---------------------------------------------------------
+
+
+gamma = 1.2
+P_0 = 179000
+#T_0 = 1612
+T_0 = 1612
+Ma = 4.359
+D_nozzle = 1.5 
+r_nozzle = D_nozzle/2
+
+
 
 M_w = compute_gas_Mw()
 
@@ -38,4 +49,4 @@ v_e = None
 
 
 # nozzle descent
-v_descent = 0
+v_descent = 10
