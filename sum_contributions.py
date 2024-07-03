@@ -16,6 +16,12 @@ print(label_list[0])
 
 
 sum_energy_interp = np.zeros_like(r_d)
+sum_mass_interp = np.zeros_like(r_d)
+
+
+plt.figure(figsize=(5,5))
+
+
 for i in range(0,4):
 
     print(i) 
@@ -38,16 +44,35 @@ for i in range(0,4):
 
     energy_interp = np.interp(r_d, range_bounds_mid, total_energy_flux_upon_impact, right = 0)
     sum_energy_interp = sum_energy_interp + energy_interp
+    
+    mass_interp = np.interp(r_d, range_bounds_mid, total_mass_flux_upon_impact, right = 0)
+    sum_mass_interp = sum_mass_interp + mass_interp
+    
+    
+    
     plt.semilogy(r_d, energy_interp, linestyle = 'dashed', linewidth = 2, label = label_list[i])
+    #plt.semilogy(r_d, mass_interp, linestyle = 'dashed', linewidth = 2, label = label_list[i], zorder = (i+100) * 2)
 
 plt.semilogy(r_d, sum_energy_interp, color = 'black', linewidth = 2, label = "Total Contribution")
+#plt.semilogy(r_d, sum_mass_interp, color = 'black', linewidth = 2, label = "Total Contribution", zorder = 0)
+
+plt.grid()
+plt.legend(fontsize = 10)
 plt.xlabel("Distance from Centerline (m)", fontsize = 16)
+#plt.ylabel("Impact Mass per Unit Area $(kg/m^2)$", fontsize = 16)
 plt.ylabel("Impact Energy per Unit Area $(J/m^2)$", fontsize = 16)
 plt.xticks(fontsize = 18)
 plt.yticks(fontsize = 18)
 plt.locator_params(axis='x', nbins=5)
+
 plt.xlim(0,250)
-plt.ylim(1E-2,1E4)
-plt.grid()
-plt.legend(fontsize = 12)
+plt.ylim(1E0,1E4)
+#plt.savefig("output/impact_mass_profile_combined_near.png", bbox_inches='tight',dpi=100)
+plt.savefig("output/impact_energy_profile_combined_near.png", bbox_inches='tight',dpi=100)
+
+#plt.xlim(0,8000)
+#plt.ylim(1E0,1E4)
+#plt.savefig("output/impact_mass_profile_combined_far.png", bbox_inches='tight',dpi=100)
+#plt.savefig("output/impact_energy_profile_combined_far.png", bbox_inches='tight',dpi=100)
+
 plt.show()
