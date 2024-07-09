@@ -6,6 +6,7 @@ import var_soil as soil
 import sys_output as out
 import var_range_of_interest as bounds
 import var_impinged_gas as imp
+import var_solve_ejection as sol_ej
 
 def print_timestep(ts, h_nozzle):
 
@@ -13,7 +14,7 @@ def print_timestep(ts, h_nozzle):
 
 
 def write_bounds(bounds_ej_ring):
-    
+
     if(out.write_bounds):
         np.savetxt("output/ejecta_ring_bounds.csv", bounds_ej_ring, delimiter=',', fmt=' '.join(['%i'] + ['%.4e']*3), header = '# Ejecta Ring Radial Distances Away from Plume Centerline (Index, Min (m), Midpoint (m), Max (m))')
         print("Timestep,", "Depth Excavated,", "Threshold Energy,", "E_down,", "Alpha,","Mdot_flux", "M_area_eroded_inst", "Mdot_cumulative" )
@@ -62,5 +63,134 @@ def output_gas_props():
     if(out.output_gas):
         for i in range(0,bounds.n_points_centerline-1):
             print(i, soil.r_midpoint[i], imp.v_gas_arr[i], imp.p_gas_arr[i], imp.rho_gas_arr[i], imp.T_gas_arr[i])
+
+    return None
+
+def plot_deposited_props():
+
+
+    if(sol_ej.plot_only):
+        sol_ej.range_bounds_mid = np.genfromtxt("output/range_bounds_"+str(sol_ej.index_grain_sizes[0])+"_"+str(sol_ej.index_grain_sizes[1])+".csv", delimiter=",")
+        sol_ej.mass_flux_upon_impact = np.genfromtxt("output/mass_flux_upon_impact_"+str(sol_ej.index_grain_sizes[0])+"_"+str(sol_ej.index_grain_sizes[1])+".csv", delimiter=',')
+        sol_ej.momentum_flux_upon_impact = np.genfromtxt("output/momentum_flux_upon_impact_"+str(sol_ej.index_grain_sizes[0])+"_"+str(sol_ej.index_grain_sizes[1])+".csv", delimiter=',')
+        sol_ej.energy_flux_upon_impact = np.genfromtxt("output/energy_flux_upon_impact_"+str(sol_ej.index_grain_sizes[0])+"_"+str(sol_ej.index_grain_sizes[1])+".csv", delimiter=',')
+        sol_ej.count_flux_upon_impact = np.genfromtxt("output/count_flux_upon_impact_"+str(sol_ej.index_grain_sizes[0])+"_"+str(sol_ej.index_grain_sizes[1])+".csv", delimiter=',')
+
+    total_mass_flux_upon_impact = np.zeros(sol_ej.n_sorted_bins)
+    total_momentum_flux_upon_impact = np.zeros(sol_ej.n_sorted_bins)
+    total_energy_flux_upon_impact = np.zeros(sol_ej.n_sorted_bins)
+    total_count_flux_upon_impact = np.zeros(sol_ej.n_sorted_bins)
+
+    for i in range(0,sol_ej.n_sorted_bins):
+        total_mass_flux_upon_impact[i] = np.sum(sol_ej.mass_flux_upon_impact[:,i])
+        total_momentum_flux_upon_impact[i] = np.sum(sol_ej.momentum_flux_upon_impact[:,i])
+        total_energy_flux_upon_impact[i] = np.sum(sol_ej.energy_flux_upon_impact[:,i])
+        total_count_flux_upon_impact[i] = np.sum(sol_ej.count_flux_upon_impact[:,i])
+
+    plt.figure(figsize=(5,5), layout = 'constrained')
+    plt.plot(sol_ej.range_bounds_mid, total_energy_flux_upon_impact, color = 'black', linewidth = 2, label = 'Total')
+
+    for i in range(sol_ej.index_grain_sizes[0],sol_ej.index_grain_sizes[1]):
+        #plt.ylim(0,10)
+        plt.plot(sol_ej.range_bounds_mid, sol_ej.energy_flux_upon_impact[i,:], linewidth = 2, linestyle = 'dotted', label = "Particle Size (m): " + str('{:.1E}'.format(soil.d_particle[i])))
+        #plt.xscale('log')
+        plt.yscale('log')
+
+    plt.xlabel("Distance from Centerline (m)", fontsize = 16)
+    plt.ylabel("Impact Energy $(J/m^2)$", fontsize = 16)
+    plt.xticks(fontsize = 16)
+    plt.yticks(fontsize = 16)
+    plt.locator_params(axis='x', nbins=5)
+    plt.xlim(0,sol_ej.range_of_analysis)
+    #plt.ylim(1E-1,1E3)
+    plt.grid()
+    plt.legend(fontsize = 8)
+    plt.savefig("output/impact_energy_profile_"+str(sol_ej.index_grain_sizes[0])+"_"+str(sol_ej.index_grain_sizes[1])+".png", bbox_inches='tight', dpi=100)
+    plt.close()
+
+
+    plt.figure(figsize=(5,5), layout = 'constrained')
+    plt.plot(sol_ej.range_bounds_mid, total_momentum_flux_upon_impact, color = 'black', linewidth = 2, label = 'Total')
+
+    for i in range(sol_ej.index_grain_sizes[0], sol_ej.index_grain_sizes[1]):
+        #plt.ylim(0,10)
+        plt.plot(sol_ej.range_bounds_mid, sol_ej.momentum_flux_upon_impact[i,:], linewidth = 2, linestyle = 'dotted', label = "Particle Size (m): " + str('{:.1E}'.format(soil.d_particle[i])))
+        #plt.xscale('log')
+        plt.yscale('log')
+
+    plt.xlabel("Distance from Centerline (m)", fontsize = 16)
+    plt.ylabel("Impact Momentum $(N \cdot s/m^2)$", fontsize = 16)
+    plt.xticks(fontsize = 16)
+    plt.yticks(fontsize = 16)
+    plt.locator_params(axis='x', nbins=5)
+    plt.xlim(0,sol_ej.range_of_analysis)
+    plt.grid()
+    plt.legend(fontsize = 8)
+    plt.savefig("output/impact_momentum_profile_"+str(sol_ej.index_grain_sizes[0])+"_"+str(sol_ej.index_grain_sizes[1])+".png", bbox_inches='tight', dpi=100)
+    plt.close()
+
+    plt.figure(figsize=(5,5), layout = 'constrained')
+    plt.plot(sol_ej.range_bounds_mid, total_mass_flux_upon_impact, color = 'black', linewidth = 2, label = 'Total')
+
+    for i in range(sol_ej.index_grain_sizes[0],sol_ej.index_grain_sizes[1]):
+        #plt.ylim(0,10)
+        plt.plot(sol_ej.range_bounds_mid, sol_ej.mass_flux_upon_impact[i,:], linewidth = 2, linestyle = 'dotted', label = "Particle Size (m): " + str('{:.1E}'.format(soil.d_particle[i])))
+        #plt.xscale('log')
+        plt.yscale('log')
+
+    plt.xlabel("Distance from Centerline (m)", fontsize = 16)
+    plt.ylabel("Impact Mass $(kg/m^2)$", fontsize = 16)
+    plt.xticks(fontsize = 16)
+    plt.yticks(fontsize = 16)
+    plt.locator_params(axis='x', nbins=5)
+    plt.xlim(0,sol_ej.range_of_analysis)
+    plt.grid()
+    plt.legend(fontsize = 8)
+    plt.savefig("output/impact_mass_profile_"+str(sol_ej.index_grain_sizes[0])+"_"+str(sol_ej.index_grain_sizes[1])+".png", bbox_inches='tight',dpi=100)
+    plt.close()
+
+
+    plt.figure(figsize=(5,5), layout = 'constrained')
+    plt.plot(sol_ej.range_bounds_mid, total_count_flux_upon_impact, color = 'black', linewidth = 2, label = 'Total')
+
+    for i in range(sol_ej.index_grain_sizes[0],sol_ej.index_grain_sizes[1]):
+        #plt.ylim(0,10)
+        plt.plot(sol_ej.range_bounds_mid, sol_ej.count_flux_upon_impact[i,:], linewidth = 2, linestyle = 'dotted', label = "Particle Size (m): " + str('{:.1E}'.format(soil.d_particle[i])))
+        #plt.xscale('log')
+        plt.yscale('log')
+
+    plt.xlabel("Distance from Centerline (m)", fontsize = 16)
+    plt.ylabel("Impact Count $(\#/m^2)$", fontsize = 16)
+    plt.xticks(fontsize = 16)
+    plt.yticks(fontsize = 16)
+    plt.locator_params(axis='x', nbins=5)
+    plt.xlim(0,sol_ej.range_of_analysis)
+    plt.grid()
+    plt.legend(fontsize = 8)
+    plt.savefig("output/impact_count_profile_"+str(sol_ej.index_grain_sizes[0])+"_"+str(sol_ej.index_grain_sizes[1])+".png", bbox_inches='tight',dpi=100)
+    plt.close()
+
+
+    plt.figure(figsize=(5,5), layout = 'constrained')
+    plt.plot(sol_ej.range_bounds_mid, total_count_flux_upon_impact * 0.0025, color = 'black', linewidth = 2, label = 'Total')
+
+    for i in range(sol_ej.index_grain_sizes[0],sol_ej.index_grain_sizes[1]):
+        #plt.ylim(0,10)
+        plt.plot(sol_ej.range_bounds_mid, sol_ej.count_flux_upon_impact[i,:] * 0.0025, linewidth = 2, linestyle = 'dotted', label = "Particle Size (m): " + str('{:.1E}'.format(soil.d_particle[i])))
+        #plt.xscale('log')
+        plt.yscale('log')
+
+    plt.xlabel("Distance from Centerline (m)", fontsize = 16)
+    plt.ylabel("Impact Count $(\#/25cm^2)$", fontsize = 16)
+    plt.xticks(fontsize = 16)
+    plt.yticks(fontsize = 16)
+    plt.locator_params(axis='x', nbins=5)
+    plt.xlim(0,sol_ej.range_of_analysis)
+    plt.grid()
+    plt.legend(fontsize = 8)
+    plt.savefig("output/impact_count_sample_profile_"+str(sol_ej.index_grain_sizes[0])+"_"+str(sol_ej.index_grain_sizes[1])+".png", bbox_inches='tight',dpi=100)
+    plt.close()
+
+
 
     return None

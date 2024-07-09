@@ -30,9 +30,10 @@ if(sol_ej.plot_only is False):
     # -----------------------------------------------            
     # loop through particle launch time
     # -----------------------------------------------            
+    #for t in range(0,11):
     for t in range(0,305):
 
-        if(np.mod(t,100)==0): 
+        if(np.mod(t,1)==0): 
             print("Time (s) = ", t * 0.01)
 
 
@@ -91,13 +92,13 @@ if(sol_ej.plot_only is False):
         # ---------------------------------------------------------- 
         # loop through all particle sizes
         # ---------------------------------------------------------- 
-        for i in range(sol_ej.index_grain_sizes[0],sol_ej.index_grain_sizes[1]):   
+        for i in range(sol_ej.index_grain_sizes[0],sol_ej.index_grain_sizes[1]+1):   
 
 
             # solve for the proportion of mass of dust
             proportion = sol_ej.dust_wt_pct[i]
 
-            print("Particle Size", soil.d_particle[i])
+            #print("Particle Size", soil.d_particle[i])
             #print("Proportion", proportion)
 
             # solve for the volume of the particle
@@ -112,12 +113,10 @@ if(sol_ej.plot_only is False):
             # Velocity: add velocity 0 at both position 0 and then the end bound
             for j in range(1,np.size(u_ej_sim_particle_mid)-1):
                 r_ej_sim_particle_mid[j] = sol_ej.ejecta_ring_bounds[j-1,2]
-                u_ej_sim_particle_mid[j] = ejecta_velocities[j-1,i]
+                u_ej_sim_particle_mid[j] = ejecta_velocities[j-1,i+1]
             
             r_ej_sim_particle_mid[np.size(u_ej_sim_particle_mid)-1] = sol_ej.ejecta_ring_bounds[np.size(u_ej_sim_particle_mid)-3,3]
             
-            #print(r_ej_sim_particle_mid, np.size(r_ej_sim_particle_mid))
-            #print(u_ej_sim_particle_mid, np.size(u_ej_sim_particle_mid))
             #print(r_ej_sim_particle_mid)
             #print(u_ej_sim_particle_mid)
 
@@ -125,11 +124,9 @@ if(sol_ej.plot_only is False):
             u_ej_sim_particle_bounds_lower = np.interp(r_ej_sim_particle_bounds_lower, r_ej_sim_particle_mid, u_ej_sim_particle_mid)
             u_ej_sim_particle_bounds_upper = np.interp(r_ej_sim_particle_bounds_upper, r_ej_sim_particle_mid, u_ej_sim_particle_mid)
 
-
             #print(r_ej_sim_particle_mid, u_ej_sim_particle_mid)
             #print(r_ej_sim_particle_bounds_lower, u_ej_sim_particle_bounds_lower)
             #print(r_ej_sim_particle_bounds_upper, u_ej_sim_particle_bounds_upper)
-
 
 
             # ---------------------------------------------------------- 
@@ -147,13 +144,6 @@ if(sol_ej.plot_only is False):
                 total_mass_excavated_particle_size = ejecta_mass_excavated[j] * proportion
                 total_count_excavated_particle_size = (total_mass_excavated_particle_size / ejecta_rho_excavated[j]) / vol_particle
 
-                #print(" ") 
-                #print("Launch Bin #", j)
-                #print("Total Mass Excavated Within this Range (kg)", ejecta_mass_excavated[j])
-                #print("Mass Excavated for Particle Size ", soil.d_particle[i-1], "m (kg): ", total_mass_excavated_particle_size)
-                #print(" ")
-                #print("Distance from Centerline (m), Speed of Launch (m/s), Landing Location (m), sim particle mass (kg)")
-
                 if(j == 0):
                     lower_bound = 1
                     upper_bound = np.size(r_ej_sim_particle)
@@ -169,19 +159,20 @@ if(sol_ej.plot_only is False):
                     upper_bound = np.size(r_ej_sim_particle)
                     sim_particles = sol_ej.n_sim_particles_per_bin
 
-
-
                 # compute the mass of each simulation particle alnong this bin
                 mass_sim_particle = total_mass_excavated_particle_size/sim_particles
                 count_sim_particle = total_count_excavated_particle_size/sim_particles
 
-                #print(r_ej_sim_particle)
-                #print(u_ej_sim_particle)
-                #print(total_mass_excavated_particle_size)
-                #print(total_count_excavated_particle_size)
-                #print(sim_particles)
-                #print(mass_sim_particle)
-                #print(count_sim_particle)
+                
+                #print(" ") 
+                #print("Launch Bin #", j)
+                #print("Total Mass Excavated Within this Range (kg)", '{:.2e}'.format(ejecta_mass_excavated[j]))
+                #print("Mass Excavated for Particle Size ", soil.d_particle[i], "m (kg): ", '{:.2e}'.format(total_mass_excavated_particle_size))
+                #print("Count Excavated for Particle Size ", soil.d_particle[i], "m (kg): ", '{:.2e}'.format(total_count_excavated_particle_size))
+                #print('Number of Simulation Particles:', sim_particles, ', Mass of a Single Simulation Particle (kg)','{:.2e}'.format(mass_sim_particle))
+                #print('Number of Simulation Particles:', sim_particles, ', Count of a Single Simulation Particle ','{:.2e}'.format(count_sim_particle))
+                
+                #print(" ")
 
                 #time.sleep(1000) 
             
@@ -200,34 +191,31 @@ if(sol_ej.plot_only is False):
 
                         # determine the maximum arc length range by interpolating the velocities
                         r_max = np.interp(u_ej_sim_particle[k], range_data[:,0], range_data[:,1])
-                        print(r_max)
+                        #print(k, u_ej_sim_particle[k], r_max)
 
                     if(escaped_particles is False):
 
                         # sort the sim particle masses into bins based on landing location
                         for l in range(1, sol_ej.n_sorted_bins):
-                            
-                            print(sol_ej.range_bounds[l], r_max + + r_ej_sim_particle[k])
                             if(sol_ej.range_bounds[l] > r_max + r_ej_sim_particle[k]):
-
-                                sol_ej.mass_upon_impact[i-1,l-1] = sol_ej.mass_upon_impact[i-1,l-1] + mass_sim_particle
-                                sol_ej.momentum_flux_upon_impact[i-1,l-1] = sol_ej.momentum_flux_upon_impact[i-1,l-1] + (mass_sim_particle * u_ej_sim_particle[k])/sol_ej.area_sorted_bins[l-1]
-                                sol_ej.mass_flux_upon_impact[i-1,l-1] = sol_ej.mass_flux_upon_impact[i-1,l-1] + (mass_sim_particle/sol_ej.area_sorted_bins[l-1])
-                                sol_ej.energy_flux_upon_impact[i-1,l-1] = sol_ej.energy_flux_upon_impact[i-1,l-1] + (0.5 * mass_sim_particle * u_ej_sim_particle[k]**2)/sol_ej.area_sorted_bins[l-1]
-                                sol_ej.count_flux_upon_impact[i-1,l-1] = sol_ej.count_flux_upon_impact[i-1,l-1] + (count_sim_particle/sol_ej.area_sorted_bins[l-1])
-
+                                #print(sol_ej.range_bounds[l], r_max + r_ej_sim_particle[k])
+                                #print(k, "Belongs in Bin", l - 1, "Particle ", i, r_max, sol_ej.range_bounds[l])
+                                sol_ej.mass_upon_impact[i,l-1] = sol_ej.mass_upon_impact[i,l-1] + mass_sim_particle
+                                sol_ej.momentum_flux_upon_impact[i,l-1] = sol_ej.momentum_flux_upon_impact[i,l-1] + (mass_sim_particle * u_ej_sim_particle[k])/sol_ej.area_sorted_bins[l-1]
+                                sol_ej.mass_flux_upon_impact[i,l-1] = sol_ej.mass_flux_upon_impact[i,l-1] + (mass_sim_particle/sol_ej.area_sorted_bins[l-1])
+                                sol_ej.energy_flux_upon_impact[i,l-1] = sol_ej.energy_flux_upon_impact[i,l-1] + (0.5 * mass_sim_particle * u_ej_sim_particle[k]**2)/sol_ej.area_sorted_bins[l-1]
+                                sol_ej.count_flux_upon_impact[i,l-1] = sol_ej.count_flux_upon_impact[i,l-1] + (count_sim_particle/sol_ej.area_sorted_bins[l-1])
                                 break
-                        
-                        input("Press Enter to continue...")
-                        
-                #print(mass_flux_upon_impact[i-1,:])
-                #print(energy_flux_upon_impact[i-1,:])
-                #print(energy_flux_upon_impact[i-1,:])
-
-
+            
+            #print("mass", sol_ej.mass_flux_upon_impact[i,:])
+            #print("energy", sol_ej.energy_flux_upon_impact[i,:])
+            #print("count", sol_ej.count_flux_upon_impact[i,:])
+            #input('press enter to continue')
+#
+#
     np.savetxt("output/mass_flux_upon_impact_"+str(sol_ej.index_grain_sizes[0])+"_"+str(sol_ej.index_grain_sizes[1])+".csv", sol_ej.mass_flux_upon_impact, delimiter=",")
     np.savetxt("output/momentum_flux_upon_impact_"+str(sol_ej.index_grain_sizes[0])+"_"+str(sol_ej.index_grain_sizes[1])+".csv", sol_ej.momentum_flux_upon_impact, delimiter=",")
     np.savetxt("output/energy_flux_upon_impact_"+str(sol_ej.index_grain_sizes[0])+"_"+str(sol_ej.index_grain_sizes[1])+".csv", sol_ej.energy_flux_upon_impact, delimiter=",")
     np.savetxt("output/count_flux_upon_impact_"+str(sol_ej.index_grain_sizes[0])+"_"+str(sol_ej.index_grain_sizes[1])+".csv", sol_ej.count_flux_upon_impact, delimiter=",")
-
-plot_deposited_props()
+#
+#plot_deposited_props()
