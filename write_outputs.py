@@ -197,25 +197,6 @@ elif (spacecraft.lander_type == 'bluemoon_H90_lambda5_m1p5e04'):
 # -----------------------------------------------------------------
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 elif (spacecraft.lander_type == 'starship_H60_lambda1p5_m5e04'):
     output_folder = 'starship_H60_lambda1p5_m5e04'
 elif (spacecraft.lander_type == 'starship_H60_lambda2_m5e04'):
@@ -228,7 +209,6 @@ elif (spacecraft.lander_type == 'starship_H60_lambda8_m5e04'):
     output_folder = 'starship_H60_lambda8_m5e04'
 elif (spacecraft.lander_type == 'starship_H60_lambda10_m5e04'):
     output_folder = 'starship_H60_lambda10_m5e04'
-
 
 
 elif (spacecraft.lander_type == 'starship_H30_lambda1p5_m1e05'):
@@ -259,7 +239,61 @@ elif (spacecraft.lander_type == 'starship_H60_lambda8_m1e05'):
 elif (spacecraft.lander_type == 'starship_H60_lambda10_m1e05'):
     output_folder = 'starship_H60_lambda10_m1e05'
 
+# ----------------------------------------------------------------
+# Starship Upper Thruster Routines
+# ----------------------------------------------------------------
 
+elif (spacecraft.lander_type == 'starshipUpper_H30_lambda1p5_m5e04'):
+    output_folder = 'starshipUpper_H30_lambda1p5_m5e04'
+elif (spacecraft.lander_type == 'starshipUpper_H30_lambda2_m5e04'):
+    output_folder = 'starshipUpper_H30_lambda2_m5e04'
+elif (spacecraft.lander_type == 'starshipUpper_H30_lambda4_m5e04'):
+    output_folder = 'starshipUpper_H30_lambda4_m5e04'
+elif (spacecraft.lander_type == 'starshipUpper_H30_lambda6_m5e04'):
+    output_folder = 'starshipUpper_H30_lambda6_m5e04'
+elif (spacecraft.lander_type == 'starshipUpper_H30_lambda8_m5e04'):
+    output_folder = 'starshipUpper_H30_lambda8_m5e04'
+elif (spacecraft.lander_type == 'starshipUpper_H30_lambda10_m5e04'):
+    output_folder = 'starshipUpper_H30_lambda10_m5e04'
+
+elif (spacecraft.lander_type == 'starshipUpper_H60_lambda1p5_m5e04'):
+    output_folder = 'starshipUpper_H60_lambda1p5_m5e04'
+elif (spacecraft.lander_type == 'starshipUpper_H60_lambda2_m5e04'):
+    output_folder = 'starshipUpper_H60_lambda2_m5e04'
+elif (spacecraft.lander_type == 'starshipUpper_H60_lambda4_m5e04'):
+    output_folder = 'starshipUpper_H60_lambda4_m5e04'
+elif (spacecraft.lander_type == 'starshipUpper_H60_lambda6_m5e04'):
+    output_folder = 'starshipUpper_H60_lambda6_m5e04'
+elif (spacecraft.lander_type == 'starshipUpper_H60_lambda8_m5e04'):
+    output_folder = 'starshipUpper_H60_lambda8_m5e04'
+elif (spacecraft.lander_type == 'starshipUpper_H60_lambda10_m5e04'):
+    output_folder = 'starshipUpper_H60_lambda10_m5e04'
+
+elif (spacecraft.lander_type == 'starshipUpper_H30_lambda1p5_m1e05'):
+    output_folder = 'starshipUpper_H30_lambda1p5_m1e05'
+elif (spacecraft.lander_type == 'starshipUpper_H30_lambda2_m1e05'):
+    output_folder = 'starshipUpper_H30_lambda2_m1e05'
+elif (spacecraft.lander_type == 'starshipUpper_H30_lambda4_m1e05'):
+    output_folder = 'starshipUpper_H30_lambda4_m1e05'
+elif (spacecraft.lander_type == 'starshipUpper_H30_lambda6_m1e05'):
+    output_folder = 'starshipUpper_H30_lambda6_m1e05'
+elif (spacecraft.lander_type == 'starshipUpper_H30_lambda8_m1e05'):
+    output_folder = 'starshipUpper_H30_lambda8_m1e05'
+elif (spacecraft.lander_type == 'starshipUpper_H30_lambda10_m1e05'):
+    output_folder = 'starshipUpper_H30_lambda10_m1e05'
+
+elif (spacecraft.lander_type == 'starshipUpper_H60_lambda1p5_m1e05'):
+    output_folder = 'starshipUpper_H60_lambda1p5_m1e05'
+elif (spacecraft.lander_type == 'starshipUpper_H60_lambda2_m1e05'):
+    output_folder = 'starshipUpper_H60_lambda2_m1e05'
+elif (spacecraft.lander_type == 'starshipUpper_H60_lambda4_m1e05'):
+    output_folder = 'starshipUpper_H60_lambda4_m1e05'
+elif (spacecraft.lander_type == 'starshipUpper_H60_lambda6_m1e05'):
+    output_folder = 'starshipUpper_H60_lambda6_m1e05'
+elif (spacecraft.lander_type == 'starshipUpper_H60_lambda8_m1e05'):
+    output_folder = 'starshipUpper_H60_lambda8_m1e05'
+elif (spacecraft.lander_type == 'starshipUpper_H60_lambda10_m1e05'):
+    output_folder = 'starshipUpper_H60_lambda10_m1e05'
 
 #if(spacecraft.lander_type == 'bluemoon_case_1'):
 #    output_folder = 'bluemoon_case_1'
@@ -309,7 +343,62 @@ output_folder = output_folder + "_scaling_"+str(scale.scaling_index)+"/"
 
 
 def print_timestep(ts, h_nozzle):
-    print("Timestep ",ts, "/", timestep.n_sub_timesteps, "Writing at time t =", ts * timestep.delta_t, "Nozzle Height: ", h_nozzle, "Descent Velocity", nozzle.v_descent, "Scaling Factor", scale.scaling_factor[scale.scaling_index])
+
+    Nt = timestep.n_sub_timesteps
+
+    if (ts < 10) or (ts % 10 == 0) or (ts >= Nt - 10):
+        
+        # add a blank line for spacing
+        print()
+        print("--------------------------------------------------------------------------------------------")
+    
+        # print the timestep update on one line
+        print(
+            f"Timestep {ts}/{Nt}  "
+            f"t = {ts * timestep.delta_t:.3f} s  "
+            f"Height = {h_nozzle:.3f} m  "
+            f"Descent = {nozzle.v_descent:.5f} m/s  "
+            f"S = {scale.scaling_factor[scale.scaling_index]}",
+            flush=True
+        )
+        print("--------------------------------------------------------------------------------------------")
+    
+
+def plot_erosion_profile(ts, r_from_centerline, d_excavated):
+
+    if not out.plot_profile:
+        return None
+
+    Nt = timestep.n_sub_timesteps
+
+    # plot first 10, every 10, and last 10
+    should_plot = (ts < 10) or (ts % 10 == 0) or (ts >= Nt - 10)
+
+    if not should_plot:
+        return None
+
+    # clean line before plot print (so it doesn't overwrite timestep print)
+    print()
+
+    print(f"Plotting Figure at Timestep: {ts}")
+
+    fig = plt.figure(figsize=(10, 6))
+    plt.title(f"Time = {ts * timestep.delta_t:.2f} s", fontsize=18)
+    plt.scatter(r_from_centerline, d_excavated)
+
+    plt.xlabel("Distance from Plume Centerline (m)", fontsize=18)
+    plt.ylabel("Excavation Depth (m)", fontsize=18)
+    plt.xticks(fontsize=18)
+    plt.yticks(fontsize=18)
+
+    plt.xlim(0, bounds.max_centerline)
+    plt.ylim(0.5, 0)
+
+    filename = f"{output_folder}{spacecraft.lander_type}_growth_{ts}.png"
+    plt.savefig(filename, dpi=300)
+    plt.close()
+
+    return None
 
 
 def write_bounds(bounds_ej_ring):
@@ -318,49 +407,6 @@ def write_bounds(bounds_ej_ring):
         np.savetxt(output_folder+spacecraft.lander_type+"_ejecta_ring_bounds.csv", bounds_ej_ring, delimiter=',', fmt=' '.join(['%i'] + ['%.4e']*3), header = '# Ejecta Ring Radial Distances Away from Plume Centerline (Index, Min (m), Midpoint (m), Max (m))')
         #print("Timestep,", "Depth Excavated,", "Threshold Energy,", "E_down,", "Alpha,","Mdot_flux", "M_area_eroded_inst", "Mdot_cumulative" )
 
-    return None
-
-def plot_erosion_profile(ts, r_from_centerline, d_excavated):
-    # compute the total mass eroded in each ring for one timestep
-    
-    if(out.plot_profile):
-    
-        if(np.mod(ts,1)==0 and ts <= 10):
-            print("Plotting Figure at Timestep: ", str(ts))
-            fig = plt.figure(figsize=(10, 6))
-            plt.title("Time = "+str("{:.2f}".format(ts * timestep.delta_t)) + " s", fontsize = 18)
-            plt.scatter(r_from_centerline, d_excavated)
-            #plt.scatter(soil.r_midpoint, soil.h_excavated_mid, linewidth = 2)
-            #plt.semilogy(soil.r_midpoint, soil.h_excavated_mid, linewidth = 2)
-            plt.xlabel("Distance from Plume Centerline (m)", fontsize = 18)
-            plt.ylabel("Excavation Depth (m)", fontsize = 18)
-            plt.xticks(fontsize = 18)
-            plt.yticks(fontsize = 18)
-            #plt.xlim(0,10)
-            plt.xlim(0, bounds.max_centerline)
-            plt.ylim(0.5, 0)
-            #plt.gca().set_aspect('equal')
-            plt.savefig(output_folder+spacecraft.lander_type+"_growth_"+str(ts)+".png", dpi = 300)
-            plt.close()
-
-        else:
-            if(np.mod(ts,100)==0 and ts >= 100):
-                print("Plotting Figure at Timestep: ", str(ts))
-                fig = plt.figure(figsize=(10, 6))
-                plt.title("Time = "+str("{:.2f}".format(ts * timestep.delta_t)) + " s", fontsize = 18)
-                plt.scatter(r_from_centerline, d_excavated)
-                #plt.scatter(soil.r_midpoint, soil.h_excavated_mid, linewidth = 2)
-                #plt.semilogy(soil.r_midpoint, soil.h_excavated_mid, linewidth = 2)
-                plt.xlabel("Distance from Plume Centerline (m)", fontsize = 18)
-                plt.ylabel("Excavation Depth (m)", fontsize = 18)
-                plt.xticks(fontsize = 18)
-                plt.yticks(fontsize = 18)
-                #plt.xlim(0,10)
-                plt.xlim(0, bounds.max_centerline)
-                plt.ylim(0.5, 0)
-                #plt.gca().set_aspect('equal')
-                plt.savefig(output_folder+spacecraft.lander_type+"_growth_"+str(ts)+".png", dpi = 300)
-                plt.close()
     return None
 
 

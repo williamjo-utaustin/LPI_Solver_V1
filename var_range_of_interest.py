@@ -16,9 +16,13 @@ if('apollo_' in spacecraft.lander_type):
 
 elif("starship_" in spacecraft.lander_type):
     min_centerline = 0
-    max_centerline = 800
-    n_points_centerline = 200 
+    max_centerline = 50
+    n_points_centerline = 140 
 
+elif("starshipUpper_" in spacecraft.lander_type):
+    min_centerline = 0
+    max_centerline = 200
+    n_points_centerline = 172 
 
 elif("bluemoon_" in spacecraft.lander_type):
     min_centerline = 0

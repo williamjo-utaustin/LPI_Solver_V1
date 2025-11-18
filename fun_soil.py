@@ -131,6 +131,23 @@ def solve_excavation_depths():
 
         # solve for the surficial density (kg/m^2)
         soil.surf_den_excavated[i] = (soil.m_excavated_inst[i])/soil.ring_area[i]
-        soil.h_excavated_mid[i] = fsolve(integral_equation, soil.h_excavated_mid_old[i], args = (soil.h_excavated_mid_old[i], soil.surf_den_excavated[i]))
+        #soil.h_excavated_mid[i] = fsolve(integral_equation, soil.h_excavated_mid_old[i], args = (soil.h_excavated_mid_old[i], soil.surf_den_excavated[i]))
+
+        try:
+            soil.h_excavated_mid[i] = fsolve(
+                integral_equation,
+                soil.h_excavated_mid_old[i],
+                args=(soil.h_excavated_mid_old[i], soil.surf_den_excavated[i]),
+                xtol=1e-8,
+                maxfev=200
+            )[0]
+        except Exception:
+            soil.h_excavated_mid[i] = fsolve(
+                integral_equation,
+                0.0,
+                args=(soil.h_excavated_mid_old[i], soil.surf_den_excavated[i]),
+                xtol=1e-8,
+                maxfev=200
+            )[0]
 
     return None

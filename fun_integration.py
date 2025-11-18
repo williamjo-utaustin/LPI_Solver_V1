@@ -1,5 +1,7 @@
+from numba import njit
 import numpy as np
 import var_constants as cs
+import var_timestepping as timestep
 import var_range_of_interest as bounds
 import var_soil as soil
 
@@ -7,7 +9,6 @@ import var_impinged_gas as imp
 
 from fun_soil import *
 from fun_integration import *
-
 
 
 def cd_sphere(Re, Kn):
@@ -39,6 +40,7 @@ def cd_sphere(Re, Kn):
     CD = CD/S_correction
     return CD
 
+@njit
 def dudt(u_p, t, d_p, rho_p, u_g, p_g, rho_g, T_g):
     
     A_const= 1.71575E-7
@@ -46,7 +48,7 @@ def dudt(u_p, t, d_p, rho_p, u_g, p_g, rho_g, T_g):
     mfp = np.sqrt(np.pi/(2 * p_g * rho_g)) * A_const * T_g**beta
     
     Kn = mfp/d_p
-    Re = (rho_g * np.abs(u_g - u_p) * d_p)/(A_const * T_g ** beta)
+    Re = (rho_g * abs(u_g - u_p) * d_p)/(A_const * T_g ** beta)
     
     if Re <= 0.0:
         CD = 0.0
@@ -63,6 +65,33 @@ def dudt(u_p, t, d_p, rho_p, u_g, p_g, rho_g, T_g):
 
     C_constant = 3 * rho_g * CD / (4 * rho_p * d_p)
     return C_constant * (u_g - u_p)**2
+
+@njit
+def integrate_particle_numba(d_p, rho_p_excavated, u_gas_mid, p_gas_mid, rho_gas_mid, T_gas_mid):
+    du = 0.01
+    x_p = 0.0
+    y_p = 0.0
+    u_p = 0.0
+    t_sub = 0.0
+
+    n_timesteps = int(u_gas_mid / du) - 1
+
+    for ts in range(n_timesteps):
+
+        if y_p > 0.03:
+            # reached 3 cm height → treat as ejecta launch
+            return u_p, x_p, t_sub
+
+        delta_t = du / dudt(u_p, ts, d_p, rho_p_excavated, u_gas_mid, p_gas_mid, rho_gas_mid, T_gas_mid)
+
+        u_p = u_p + du
+        t_sub = t_sub + delta_t
+
+        x_p = x_p + (u_p * delta_t) * np.cos(3 * np.pi/180)
+        y_p = y_p + (u_p * delta_t) * np.sin(3 * np.pi/180)
+
+    # if it never reached 3 cm, return final state anyway
+    return u_p, x_p, t_sub
 
 
 def determine_ejecta_props(t):
@@ -106,6 +135,10 @@ def determine_ejecta_props(t):
     offset_ej_time_timestep = np.zeros([total_affected_indices-1, np.size(soil. d_particle) + 1])
     ej_timestep_props = np.zeros([total_affected_indices-1, 5])
 
+    Nt = timestep.n_sub_timesteps
+    if t < 10 or t % 10 == 0 or t >= Nt - 10:
+        print(f"  integrating ejecta ({total_affected_indices} / {bounds.n_points_centerline} indices)")
+
     for i in range(0,total_affected_indices-1):
 
         i_n = int(index_count[i])
@@ -116,9 +149,10 @@ def determine_ejecta_props(t):
         ej_timestep_props[i, 2] = soil.avg_rho_p_excavated[i_n]
         ej_timestep_props[i, 3] = soil.m_excavated_inst[i_n]
         ej_timestep_props[i ,4] = soil.h_excavated_mid[i_n]
+        
 
-        if(np.mod(i,10)==0):
-            print("Integrating from index ", i_n, "to ", ip1, "Iteration #", i+1,"out of ",total_affected_indices-1)
+        #if(np.mod(i,10)==0):
+        #    print("Integrating from index ", i_n, "to ", ip1, "Iteration #", i+1,"out of ",total_affected_indices-1)
 
         rho_gas_arr_mid[i_n] = (imp.rho_gas_arr[i_n] + imp.rho_gas_arr[ip1])/2
         u_gas_arr_mid[i_n] = (imp.v_gas_arr[i_n] + imp.v_gas_arr[ip1])/2
@@ -126,52 +160,19 @@ def determine_ejecta_props(t):
         P_gas_arr_mid[i_n] = (imp.p_gas_arr[i_n] + imp.p_gas_arr[ip1])/2
 
 
-        #print(u_gas_arr_mid[i_n])
-
         u_ej_timestep[i,0] = i_n
         offset_ej_dist_timestep[i,0] = i_n
         offset_ej_time_timestep[i,0] = i_n
+       
 
-        for j in range(0,np.size(soil.d_particle)):
-            
+        for j in range(0, np.size(soil.d_particle)):
+
             d_p = soil.d_particle[j]
-            x_p = 0
-            y_p = 0
-            u_p = 0
-            t_sub = 0
 
-            # number of array points
-            du = 0.01
-            
-            n_timesteps = (int(u_gas_arr_mid[i_n]/du) - 1)
+            u_p, x_p, t_sub = integrate_particle_numba(d_p, soil.avg_rho_p_excavated[i_n], u_gas_arr_mid[i_n], P_gas_arr_mid[i_n],rho_gas_arr_mid[i_n],T_gas_arr_mid[i_n])
 
-            t_array = np.zeros(n_timesteps)
-            u_p_array = np.zeros(n_timesteps)
-    
-            x_p_array = np.zeros(n_timesteps)
-            y_p_array = np.zeros(n_timesteps)
-
-            for ts in range (0, n_timesteps):
-
-                u_p_array[ts] = u_p
-                x_p_array[ts] = x_p
-                y_p_array[ts] = y_p    
-    
-                t_array[ts] = t_sub
-    
-                if (y_p > 0.03):
-                    u_ej_timestep[i,j+1] = u_p
-                    offset_ej_dist_timestep[i,j+1] = x_p
-                    offset_ej_time_timestep[i,j+1] = t_sub
-                    break
-
-                delta_t = du/(dudt(u_p, ts, d_p, soil.avg_rho_p_excavated[i_n], u_gas_arr_mid[i_n], P_gas_arr_mid[i_n], rho_gas_arr_mid[i_n], T_gas_arr_mid[i_n]))
-
-                u_p = u_p + du
-                t_sub = t_sub + delta_t
-
-                x_p = x_p + (u_p * delta_t) * np.cos(3 * np.pi/180)
-                y_p = y_p + (u_p * delta_t) * np.sin(3 * np.pi/180)
-
+            u_ej_timestep[i, j+1]           = u_p
+            offset_ej_dist_timestep[i, j+1] = x_p
+            offset_ej_time_timestep[i, j+1] = t_sub
 
     return u_ej_timestep, offset_ej_dist_timestep, offset_ej_time_timestep, ej_timestep_props

@@ -130,11 +130,8 @@
 #lander_type = "bluemoon_H90_lambda2p5_m1p5e04"
 #lander_type = "bluemoon_H90_lambda3_m1p5e04"
 #lander_type = "bluemoon_H90_lambda4_m1p5e04"
-lander_type = "bluemoon_H90_lambda5_m1p5e04"
+#lander_type = "bluemoon_H90_lambda5_m1p5e04"
 #-----------------------------------------------
-
-
-
 #STARSHIP
 
 #lander_type = 'starship_H30_lambda1p5_m5e04'
@@ -164,4 +161,42 @@ lander_type = "bluemoon_H90_lambda5_m1p5e04"
 #lander_type = 'starship_H60_lambda6_m1e05'
 #lander_type = 'starship_H60_lambda8_m1e05'
 #lander_type = 'starship_H60_lambda10_m1e05'
+# -------------------------------------------------
+#lander_type = 'starshipUpper_H30_lambda1p5_m5e04'
+#lander_type = 'starshipUpper_H30_lambda2_m5e04'
+lander_type = 'starshipUpper_H30_lambda4_m5e04'
+#lander_type = 'starshipUpper_H30_lambda6_m5e04'
+#lander_type = 'starshipUpper_H30_lambda8_m5e04'
+#lander_type = 'starshipUpper_H30_lambda10_m5e04'
+
+#lander_type = 'starshipUpper_H60_lambda1p5_m5e04'
+#lander_type = 'starshipUpper_H60_lambda2_m5e04'
+#lander_type = 'starshipUpper_H60_lambda4_m5e04'
+#lander_type = 'starshipUpper_H60_lambda6_m5e04'
+#lander_type = 'starshipUpper_H60_lambda8_m5e04'
+#lander_type = 'starshipUpper_H60_lambda10_m5e04'
+
+#lander_type = 'starshipUpper_H30_lambda1p5_m1e05'
+#lander_type = 'starshipUpper_H30_lambda2_m1e05'
+#lander_type = 'starshipUpper_H30_lambda4_m1e05'
+#lander_type = 'starshipUpper_H30_lambda6_m1e05'
+#lander_type = 'starshipUpper_H30_lambda8_m1e05'
+#lander_type = 'starshipUpper_H30_lambda10_m1e05'
+
+#lander_type = 'starshipUpper_H60_lambda1p5_m1e05'
+#lander_type = 'starshipUpper_H60_lambda2_m1e05'
+#lander_type = 'starshipUpper_H60_lambda4_m1e05'
+#lander_type = 'starshipUpper_H60_lambda6_m1e05'
+#lander_type = 'starshipUpper_H60_lambda8_m1e05'
+#lander_type = 'starshipUpper_H60_lambda10_m1e05'
+
+
+
+
+
+
+
+
+
+
 

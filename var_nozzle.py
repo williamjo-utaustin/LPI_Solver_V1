@@ -1911,35 +1911,6 @@ if spacecraft.lander_type == 'bluemoon_H90_lambda5_m1p5e04':
 # --------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 if spacecraft.lander_type == 'starship_H30_lambda1p5_m5e04':
     # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
     n_engines = 3
@@ -2948,6 +2919,1014 @@ if spacecraft.lander_type == 'starship_H60_lambda10_m1e05':
     k_bar = gamma * (gamma - 1) * Ma**2
     timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
 
+# ------------------------------------------------------------------------------------------------
+# 11/17/2025
+# ------------------------------------------------------------------------------------------------
 
+if spacecraft.lander_type == 'starshipUpper_H30_lambda1p5_m5e04':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 50000 # kg (Total Mass Lander)
 
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
 
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 30 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 8.60663 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 6.97137 # m/s (downward)
+    a_thrust = 0.81 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  366895.05 # Pa
+    T_0 = 3057.554 # K
+    rho_0 = 0.28819245 # kg/m3
+
+    # List Exit Conditions
+    P_e = 316.86731 # Pa
+    T_e = 1827.0265 # K
+    rho_e = 0.00053739418 # kg/m^3
+    m_dot_e = 11.372391 * n_engines #kg/s
+    gamma = 1.145966
+    Ma = 4.1614505
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H30_lambda2_m5e04':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 50000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 30 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 6.08581 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 9.859006 # m/s (downward)
+    a_thrust = 1.62 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  489550.95 # Pa
+    T_0 = 3077.9836 # K
+    rho_0 = 0.38203972 # kg/m3
+
+    # List Exit Conditions
+    P_e = 418.13099 # Pa
+    T_e = 1820.4668 # K
+    rho_e = 0.00071343288 # kg/m^3
+    m_dot_e = 15.167359 * n_engines #kg/s
+    gamma = 1.148478
+    Ma = 4.1714004
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H30_lambda4_m5e04':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 50000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 30 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 3.51364 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 17.076299 # m/s (downward)
+    a_thrust = 4.86 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  980174.57 # Pa
+    T_0 = 3159.7019 # K
+    rho_0 = 0.7574288 # kg/m3
+
+    # List Exit Conditions
+    P_e = 823.18573 # Pa
+    T_e = 1794.2283 # K
+    rho_e = 0.0014175877 # kg/m^3
+    m_dot_e = 30.049521 * n_engines #kg/s
+    gamma = 1.158526
+    Ma = 4.2111998
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H30_lambda6_m5e04':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 50000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 30 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 2.72166 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 22.045408 # m/s (downward)
+    a_thrust = 8.1 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  1470798.2 # Pa
+    T_0 = 3241.4201 # K
+    rho_0 = 1.1328179 # kg/m3
+
+    # List Exit Conditions
+    P_e = 1228.2405 # Pa
+    T_e = 1767.9897 # K
+    rho_e = 0.0021217424 # kg/m^3
+    m_dot_e = 44.46373 * n_engines #kg/s
+    gamma = 1.1685739
+    Ma = 4.2509991
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H30_lambda8_m5e04':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 50000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 30 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 2.30022 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 26.084478 # m/s (downward)
+    a_thrust = 11.34 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  1961421.8 # Pa
+    T_0 = 3323.1384 # K
+    rho_0 = 1.508207 # kg/m3
+
+    # List Exit Conditions
+    P_e = 1633.2952 # Pa
+    T_e = 1741.7512 # K
+    rho_e = 0.0028258972 # kg/m^3
+    m_dot_e = 58.425179 * n_engines #kg/s
+    gamma = 1.1786219
+    Ma = 4.2907985
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H30_lambda10_m5e04':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 50000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 30 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 2.0286 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 29.577018 # m/s (downward)
+    a_thrust = 14.58 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  2452045.4 # Pa
+    T_0 = 3404.8567 # K
+    rho_0 = 1.883596 # kg/m3
+
+    # List Exit Conditions
+    P_e = 2038.3499 # Pa
+    T_e = 1715.5126 # K
+    rho_e = 0.003530052 # kg/m^3
+    m_dot_e = 71.949251 * n_engines #kg/s
+    gamma = 1.1886699
+    Ma = 4.3305979
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H60_lambda1p5_m5e04':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 50000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 60 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 12.1716 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 9.859006 # m/s (downward)
+    a_thrust = 0.81 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  366895.05 # Pa
+    T_0 = 3057.554 # K
+    rho_0 = 0.28819245 # kg/m3
+
+    # List Exit Conditions
+    P_e = 316.86731 # Pa
+    T_e = 1827.0265 # K
+    rho_e = 0.00053739418 # kg/m^3
+    m_dot_e = 11.372391 * n_engines #kg/s
+    gamma = 1.145966
+    Ma = 4.1614505
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H60_lambda2_m5e04':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 50000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 60 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 8.60663 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 13.94274 # m/s (downward)
+    a_thrust = 1.62 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  489550.95 # Pa
+    T_0 = 3077.9836 # K
+    rho_0 = 0.38203972 # kg/m3
+
+    # List Exit Conditions
+    P_e = 418.13099 # Pa
+    T_e = 1820.4668 # K
+    rho_e = 0.00071343288 # kg/m^3
+    m_dot_e = 15.167359 * n_engines #kg/s
+    gamma = 1.148478
+    Ma = 4.1714004
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H60_lambda4_m5e04':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 50000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 60 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 4.96904 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 24.149534 # m/s (downward)
+    a_thrust = 4.86 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  980174.57 # Pa
+    T_0 = 3159.7019 # K
+    rho_0 = 0.7574288 # kg/m3
+
+    # List Exit Conditions
+    P_e = 823.18573 # Pa
+    T_e = 1794.2283 # K
+    rho_e = 0.0014175877 # kg/m^3
+    m_dot_e = 30.049521 * n_engines #kg/s
+    gamma = 1.158526
+    Ma = 4.2111998
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H60_lambda6_m5e04':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 50000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 60 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 3.849 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 31.176915 # m/s (downward)
+    a_thrust = 8.1 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  1470798.2 # Pa
+    T_0 = 3241.4201 # K
+    rho_0 = 1.1328179 # kg/m3
+
+    # List Exit Conditions
+    P_e = 1228.2405 # Pa
+    T_e = 1767.9897 # K
+    rho_e = 0.0021217424 # kg/m^3
+    m_dot_e = 44.46373 * n_engines #kg/s
+    gamma = 1.1685739
+    Ma = 4.2509991
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H60_lambda8_m5e04':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 50000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 60 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 3.253 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 36.889023 # m/s (downward)
+    a_thrust = 11.34 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  1961421.8 # Pa
+    T_0 = 3323.1384 # K
+    rho_0 = 1.508207 # kg/m3
+
+    # List Exit Conditions
+    P_e = 1633.2952 # Pa
+    T_e = 1741.7512 # K
+    rho_e = 0.0028258972 # kg/m^3
+    m_dot_e = 58.425179 * n_engines #kg/s
+    gamma = 1.1786219
+    Ma = 4.2907985
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H60_lambda10_m5e04':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 50000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 60 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 2.86888 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 41.82822 # m/s (downward)
+    a_thrust = 14.58 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  2452045.4 # Pa
+    T_0 = 3404.8567 # K
+    rho_0 = 1.883596 # kg/m3
+
+    # List Exit Conditions
+    P_e = 2038.3499 # Pa
+    T_e = 1715.5126 # K
+    rho_e = 0.003530052 # kg/m^3
+    m_dot_e = 71.949251 * n_engines #kg/s
+    gamma = 1.1886699
+    Ma = 4.3305979
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H30_lambda1p5_m1e05':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 100000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 30 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 8.60663 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 6.97137 # m/s (downward)
+    a_thrust = 0.81 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  734862.76 # Pa
+    T_0 = 3118.8427 # K
+    rho_0 = 0.56973426 # kg/m3
+
+    # List Exit Conditions
+    P_e = 620.65836 # Pa
+    T_e = 1807.3475 # K
+    rho_e = 0.0010655103 # kg/m^3
+    m_dot_e = 22.667799 * n_engines #kg/s
+    gamma = 1.153502
+    Ma = 4.1913001
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H30_lambda2_m1e05':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 100000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 30 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 6.08581 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 9.859006 # m/s (downward)
+    a_thrust = 1.62 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  980174.57 # Pa
+    T_0 = 3159.7019 # K
+    rho_0 = 0.7574288 # kg/m3
+
+    # List Exit Conditions
+    P_e = 823.18573 # Pa
+    T_e = 1794.2283 # K
+    rho_e = 0.0014175877 # kg/m^3
+    m_dot_e = 30.049521 * n_engines #kg/s
+    gamma = 1.158526
+    Ma = 4.2111998
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H30_lambda4_m1e05':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 100000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 30 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 3.51364 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 17.076299 # m/s (downward)
+    a_thrust = 4.86 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  1961421.8 # Pa
+    T_0 = 3323.1384 # K
+    rho_0 = 1.508207 # kg/m3
+
+    # List Exit Conditions
+    P_e = 1633.2952 # Pa
+    T_e = 1741.7512 # K
+    rho_e = 0.0028258972 # kg/m^3
+    m_dot_e = 58.425179 * n_engines #kg/s
+    gamma = 1.1786219
+    Ma = 4.2907985
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H30_lambda6_m1e05':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 100000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 30 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 2.72166 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 22.045408 # m/s (downward)
+    a_thrust = 8.1 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  2944532.7 # Pa
+    T_0 = 3442.0548 # K
+    rho_0 = 2.2521125 # kg/m3
+
+    # List Exit Conditions
+    P_e = 2429.5801 # Pa
+    T_e = 1703.5621 # K
+    rho_e = 0.0042257519 # kg/m^3
+    m_dot_e = 86.015667 * n_engines #kg/s
+    gamma = 1.1920032
+    Ma = 4.3501659
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H30_lambda8_m1e05':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 100000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 30 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 2.30022 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 26.084478 # m/s (downward)
+    a_thrust = 11.34 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  3931116.7 # Pa
+    T_0 = 3478.0059 # K
+    rho_0 = 2.9832108 # kg/m3
+
+    # List Exit Conditions
+    P_e = 3200.1022 # Pa
+    T_e = 1691.9993 # K
+    rho_e = 0.0056098503 # kg/m^3
+    m_dot_e = 114.61105 * n_engines #kg/s
+    gamma = 1.1928714
+    Ma = 4.3718313
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H30_lambda10_m1e05':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 100000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 30 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 2.0286 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 29.577018 # m/s (downward)
+    a_thrust = 14.58 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  4917700.8 # Pa
+    T_0 = 3513.957 # K
+    rho_0 = 3.714309 # kg/m3
+
+    # List Exit Conditions
+    P_e = 3970.6243 # Pa
+    T_e = 1680.4365 # K
+    rho_e = 0.0069939488 # kg/m^3
+    m_dot_e = 142.84175 * n_engines #kg/s
+    gamma = 1.1937396
+    Ma = 4.3934967
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H60_lambda1p5_m1e05':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 100000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 60 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 12.1716 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 9.859006 # m/s (downward)
+    a_thrust = 0.81 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  734862.76 # Pa
+    T_0 = 3118.8427 # K
+    rho_0 = 0.56973426 # kg/m3
+
+    # List Exit Conditions
+    P_e = 620.65836 # Pa
+    T_e = 1807.3475 # K
+    rho_e = 0.0010655103 # kg/m^3
+    m_dot_e = 22.667799 * n_engines #kg/s
+    gamma = 1.153502
+    Ma = 4.1913001
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H60_lambda2_m1e05':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 100000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 60 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 8.60663 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 13.94274 # m/s (downward)
+    a_thrust = 1.62 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  980174.57 # Pa
+    T_0 = 3159.7019 # K
+    rho_0 = 0.7574288 # kg/m3
+
+    # List Exit Conditions
+    P_e = 823.18573 # Pa
+    T_e = 1794.2283 # K
+    rho_e = 0.0014175877 # kg/m^3
+    m_dot_e = 30.049521 * n_engines #kg/s
+    gamma = 1.158526
+    Ma = 4.2111998
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H60_lambda4_m1e05':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 100000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 60 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 4.96904 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 24.149534 # m/s (downward)
+    a_thrust = 4.86 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  1961421.8 # Pa
+    T_0 = 3323.1384 # K
+    rho_0 = 1.508207 # kg/m3
+
+    # List Exit Conditions
+    P_e = 1633.2952 # Pa
+    T_e = 1741.7512 # K
+    rho_e = 0.0028258972 # kg/m^3
+    m_dot_e = 58.425179 * n_engines #kg/s
+    gamma = 1.1786219
+    Ma = 4.2907985
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H60_lambda6_m1e05':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 100000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 60 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 3.849 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 31.176915 # m/s (downward)
+    a_thrust = 8.1 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  2944532.7 # Pa
+    T_0 = 3442.0548 # K
+    rho_0 = 2.2521125 # kg/m3
+
+    # List Exit Conditions
+    P_e = 2429.5801 # Pa
+    T_e = 1703.5621 # K
+    rho_e = 0.0042257519 # kg/m^3
+    m_dot_e = 86.015667 * n_engines #kg/s
+    gamma = 1.1920032
+    Ma = 4.3501659
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H60_lambda8_m1e05':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 100000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 60 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 3.253 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 36.889023 # m/s (downward)
+    a_thrust = 11.34 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  3931116.7 # Pa
+    T_0 = 3478.0059 # K
+    rho_0 = 2.9832108 # kg/m3
+
+    # List Exit Conditions
+    P_e = 3200.1022 # Pa
+    T_e = 1691.9993 # K
+    rho_e = 0.0056098503 # kg/m^3
+    m_dot_e = 114.61105 * n_engines #kg/s
+    gamma = 1.1928714
+    Ma = 4.3718313
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
+
+if spacecraft.lander_type == 'starshipUpper_H60_lambda10_m1e05':
+    # Blue Origin uses three RE-7 Engines for its BlueMoon MK2 Lander
+    n_engines = 3
+    m_lander = 100000 # kg (Total Mass Lander)
+
+    # List Thruster Exit Geometry
+    A_nozzle = 5.89646 * n_engines  #m^2
+    A_throat = A_nozzle/76 # m^2
+    D_nozzle = 2 * np.sqrt(A_nozzle/np.pi)  #m^2
+    r_nozzle = D_nozzle/2
+
+    # Define Starting and Final Landing Positions, and Corresponding Nozzle Exit Pos
+    lander_base_starting_altitude = 60 # m
+    lander_base_final_altitude = 0 # m
+    lander_base_to_nozzle_disp = 33 # m
+    lander_total_sim_time = 2.86888 #
+    h_nozzle_init = lander_base_starting_altitude + lander_base_to_nozzle_disp
+    min_altitude_lander = lander_base_final_altitude + lander_base_to_nozzle_disp
+
+    # Descent Properties (Downward Velocity and Upward Accelleration)
+    v_init = 41.82822 # m/s (downward)
+    a_thrust = 14.58 # m/s^2 (upward)
+
+    # List Chamber Conditions
+    P_0 =  4917700.8 # Pa
+    T_0 = 3513.957 # K
+    rho_0 = 3.714309 # kg/m3
+
+    # List Exit Conditions
+    P_e = 3970.6243 # Pa
+    T_e = 1680.4365 # K
+    rho_e = 0.0069939488 # kg/m^3
+    m_dot_e = 142.84175 * n_engines #kg/s
+    gamma = 1.1937396
+    Ma = 4.3934967
+
+    # Other Easily Computed Exit Variables
+    R_gas = P_e / (rho_e * T_e)
+    v_e = Ma * np.sqrt(gamma * R_gas * T_e)
+    k_bar = gamma * (gamma - 1) * Ma**2
+    timesteps.n_sub_timesteps = int(lander_total_sim_time/timesteps.delta_t)
