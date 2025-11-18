@@ -19,9 +19,11 @@ sum_energy_interp = np.zeros_like(r_d)
 sum_mass_interp = np.zeros_like(r_d)
 sum_count_interp = np.zeros_like(r_d)
 
-
 plt.figure(figsize=(5,5))
 
+
+file_folder = 'apollo_vel_slow_alt_mid/'
+#apollo_vel_slow_alt_mid/apollo_vel_slow_alt_mid_post_processing
 
 for i in range(0,4):
 

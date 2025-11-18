@@ -22,6 +22,7 @@ from fun_impinged_gas import *
 from subroutines import *
 
 # run main code
+compute_nozzle_exhaust()
 loop()
 
 #plot_initial_disturbed_altitude()
